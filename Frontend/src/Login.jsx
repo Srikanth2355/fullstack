@@ -1,9 +1,37 @@
-import React from "react";
-import { Form, Input, Button } from 'antd';
-
+import React, { useState } from "react";
+import { Form, Input, Button, Spin, notification } from 'antd';
+import axiosInstance from "./utils/axios";
+import { useNavigate } from 'react-router-dom';
 const LoginForm = () => {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
   const onFinish = (values) => {
     console.log('Form Values:', values);
+    setLoading(true);
+    axiosInstance.post('/user/login',values)
+    .then((response) => {
+      if(response.status === 200){
+        notification.success({
+          message: 'Success',
+          description: response.data.message,
+          duration: 5
+        });
+        form.resetFields()
+        navigate('/home');
+      }
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      notification.error({
+        message: 'Error',
+        description: error.response.data.error, // Use the error message from the response
+        duration: 5
+      });
+      setLoading(false);
+    });
+    
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -12,9 +40,30 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      
+      {
+        loading && <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light overlay background
+                  zIndex: 1000,
+                }}
+              >
+                <Spin size="large" />
+          </div>
+      }
+      
       <div className="bg-white mx-2 p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-4 ">Login</h1>
         <Form
+            form = {form}
             name="login"
             initialValues={{ remember: true }}
             onFinish={onFinish}
@@ -23,13 +72,16 @@ const LoginForm = () => {
         >
             {/* Username */}
             <Form.Item
-            label="Username"
-            name="username"
-            rules={[
-                { required: true, message: 'Please input your username!' },
+            label="Email"
+            name="email"
+            rules={[{
+              type: 'email',
+              message: 'Please enter a valid email!',
+            },
+            { required: true, message: 'Please input your email!' },
             ]}
             >
-            <Input placeholder="Enter your username" />
+            <Input placeholder="Enter your Email" />
             </Form.Item>
 
             {/* Password */}
