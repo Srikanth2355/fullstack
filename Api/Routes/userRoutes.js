@@ -42,7 +42,7 @@ userrouter.post("/login",loginMiddleware, async (req, res) => {
             maxAge: 12 * 60 * 60 * 1000, // 12 hrs in milliseconds
             sameSite: 'strict', // Prevent CSRF
         });
-        const userobj = {id:getuser._id,email:getuser.email,role:getuser.role};
+        const userobj = {id:getuser._id,email:getuser.email,role:getuser.role,name:getuser.name};
         res.status(200).json({ message: "User logged in successfully", userdata :userobj });
 
     }catch(error){

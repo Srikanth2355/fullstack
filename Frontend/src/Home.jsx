@@ -4,12 +4,14 @@ import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from './utils/loader.jsx';
 import axiosInstance from './utils/axios';
+import { useSelector } from 'react-redux';
 
 const { Header } = Layout;
 
 function Home() {
   const navigate = useNavigate();
   const {showLoading, hideLoading} = useLoading();
+  const user = useSelector((state) => state.user);
 
   const handleLogout = () => {
     showLoading();
@@ -44,7 +46,7 @@ function Home() {
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   <Avatar size="medium" icon={<UserOutlined />} />
-                  Srikanth <DownOutlined />
+                  {user.name} <DownOutlined />
                 </Space>
               </a>
             </Dropdown>
