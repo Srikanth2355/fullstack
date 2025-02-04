@@ -50,6 +50,9 @@ userrouter.post("/login",loginMiddleware, async (req, res) => {
     }
 });
 
-
+userrouter.get("/logout",(req, res) => {
+    res.clearCookie('jwtToken',{ httpOnly: true, sameSite: 'strict', secure: true });
+    res.status(200).json({ message: "User logged out successfully" });
+})
 
 module.exports = userrouter;
