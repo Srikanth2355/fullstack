@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import { Form, Input, Button, Spin, notification } from 'antd';
 import axiosInstance from "./utils/axios";
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { setUser, clearUser } from "./slice/user";
+import { useLoading } from "./utils/loader";
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const {showLoading, hideLoading} = useLoading();
   const onFinish = (values) => {
-    console.log('Form Values:', values);
-    setLoading(true);
+    showLoading();
     axiosInstance.post('/user/login',values)
     .then((response) => {
       if(response.status === 200){
+        dispatch(setUser(response.data.userdata));
         notification.success({
           message: 'Success',
           description: response.data.message,
@@ -20,7 +26,6 @@ const LoginForm = () => {
         form.resetFields()
         navigate('/home');
       }
-      setLoading(false);
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -29,7 +34,9 @@ const LoginForm = () => {
         description: error.response.data.error, // Use the error message from the response
         duration: 5
       });
-      setLoading(false);
+    })
+    .finally(() => {
+      hideLoading();
     });
     
   };
@@ -40,26 +47,6 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      
-      {
-        loading && <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light overlay background
-                  zIndex: 1000,
-                }}
-              >
-                <Spin size="large" />
-          </div>
-      }
-      
       <div className="bg-white mx-2 p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-4 ">Login</h1>
         <Form
