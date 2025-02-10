@@ -2,7 +2,6 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const connectDB = require('./Config/db')
-const userRoutes = require('./Routes/userRoutes')
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
@@ -28,13 +27,17 @@ const limit = rateLimit({
             message: `You have exhausted the number of hits. Please try again after ${retryAfter} minutes.`,
         });
     },
-    standarHeaders: 'draft-8',
+    standarHeaders: true,
     legacyHeaders: false,
     store: new rateLimit.MemoryStore()
 });
 app.use(limit);
 
-app.use('/api/user', userRoutes)
+app.use('/api/user', (req,res,next)=>{
+    Object.keys(require.cache).forEach((key) => delete require.cache[key]);
+    const userRoutes = require('./Routes/userRoutes')
+    userRoutes(req,res,next)
+})
 
 
 const port = process.env.PORT || 5000
