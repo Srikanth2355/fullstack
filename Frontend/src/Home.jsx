@@ -15,23 +15,28 @@ function Home() {
 
   const handleLogout = () => {
     showLoading();
-      axiosInstance.get('/user/logout')
-      .then((response) => {
-        if(response.status === 200){
-          navigate('/login');
-          notification.success({
-            message: 'Success',
-            description: "Logout Successfull",
-            duration: 3
-          });
-        }
+    axiosInstance.get('/user/logout')
+    .then((response) => {
+      if(response.status === 200){
+        navigate('/login');
+        notification.success({
+          message: 'Success',
+          description: "Logout Successfull",
+          duration: 3
+        });
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      notification.error({
+        message: 'Error',
+        description: error.response.data.message, // Use the error message from the response
+        duration: 5
       })
-      .catch((error) => {
-        console.error('Error:', error);
-      })
-      .finally(() => {
-        hideLoading();
-      }); 
+    })
+    .finally(() => {
+      hideLoading();
+    }); 
 
   }
   return (
