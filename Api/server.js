@@ -5,6 +5,7 @@ const connectDB = require('./Config/db')
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
+const cookieParser = require('cookie-parser');
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(cors())
 app.use(express.json())
 app.use(mongoSanitize())
 app.use(helmet())
+app.use(cookieParser());
 
 connectDB()
 
@@ -34,7 +36,8 @@ const limit = rateLimit({
 app.use(limit);
 
 app.use('/api/user', (req,res,next)=>{
-    Object.keys(require.cache).forEach((key) => delete require.cache[key]);
+    const routepath = require.resolve('./Routes/userRoutes')
+    delete require.cache[routepath];
     const userRoutes = require('./Routes/userRoutes')
     userRoutes(req,res,next)
 })
