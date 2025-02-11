@@ -22,12 +22,16 @@ const verifyJWT = (token)=>{
 
             const verifytoken = jwt.verify(tokenwithoutbearer,jwt_secret);
             return {
-                userdata: { id: decodedtoken.id, email: decodedtoken.email, role: decodedtoken.role },
+                userdata: { id: decodedtoken.id, email: decodedtoken.email, role: decodedtoken.role, name: decodedtoken.name },
                 valid: true,
               }; 
         }
-    }catch(error){
-        console.error('Token verification failed:', error.message);
+    }catch(err){
+        if(err.name === 'TokenExpiredError'){
+            console.error('Token expired:', err.message);
+        }else{
+            console.error('Token verification failed:', err.message);
+        }
     
         // Return invalid status if verification fails
         return {

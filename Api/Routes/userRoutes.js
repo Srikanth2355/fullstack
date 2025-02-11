@@ -5,6 +5,7 @@ const registerMiddleware = require("../Middlewares/register");
 const loginMiddleware = require("../Middlewares/login");
 const bcrypt = require("bcrypt");
 const {signJWT,verifyJWT} = require("../utils/jwt");
+const {checkLoggedIn} = require("../Middlewares/checkLoggedIn");
 
 userrouter.post("/register",registerMiddleware, async (req, res) => {
     try {
@@ -35,7 +36,7 @@ userrouter.post("/login",loginMiddleware, async (req, res) => {
         if (!password_match) {
             return res.status(400).json({ error: "Invalid password" });
         }
-        const token = signJWT({id:getuser._id,email:getuser.email,role:getuser.role});
+        const token = signJWT({id:getuser._id,email:getuser.email,role:getuser.role,name:getuser.name});
         res.cookie('jwtToken', token, {
             httpOnly: true, // Prevent access from JavaScript
             secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
@@ -54,5 +55,13 @@ userrouter.get("/logout",(req, res) => {
     res.clearCookie('jwtToken',{ httpOnly: true, sameSite: 'strict', secure: true });
     res.status(200).json({ message: "User logged out successfully" });
 })
+
+userrouter.get("/checklogin",checkLoggedIn,async (req, res) => {
+    try{
+        res.status(200).json({ message: "User is logged in", userdata: req.user });
+    }catch(error){
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = userrouter;
