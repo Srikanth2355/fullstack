@@ -4,6 +4,7 @@ import Home from './Home'
 import Register from './Register'
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import { LoadingProvider } from './utils/loader.jsx';
+import ProtectedRoute from './utils/protectedRoute.jsx';
 
 function App() {
 
@@ -11,7 +12,9 @@ function App() {
     <LoadingProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home" element={ <Home /> } />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
