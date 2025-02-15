@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { Form, Input, Button, Typography,Spin, notification } from 'antd';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import axiosInstance from './utils/axios';
+import axiosInstance from '../utils/axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 const { Title } = Typography;
 
