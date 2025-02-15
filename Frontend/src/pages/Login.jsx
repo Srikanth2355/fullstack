@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Spin, notification  } from 'antd';
-import axiosInstance from "./utils/axios";
+import axiosInstance from "../utils/axios";
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
-import { setUser, clearUser } from "./slice/user";
-import { useLoading } from "./utils/loader";
+import { setUser, clearUser } from "../slice/user";
+import { useLoading } from "../utils/loader";
 const LoginForm = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -24,7 +24,7 @@ const LoginForm = () => {
           duration: 5
         });
         form.resetFields()
-        navigate('/home');
+        navigate('/');
       }
     })
     .catch((error) => {
