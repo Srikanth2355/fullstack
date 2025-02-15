@@ -71,10 +71,29 @@ function Notes() {
         Add Note
       </Button>
     </Card>
+    {/* <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
 
-    {/* <div className='mx-2'>
-    <p dangerouslySetInnerHTML={{ __html: view }} />
-        </div> */}
+        <Card className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
+        
+        
+            <ReactQuill
+            value={view} // Render the HTML content
+            readOnly={true} // Prevent editing
+            theme="snow" // Keep default styling
+            modules={{ toolbar: false }} // Remove the toolbar
+        />
+        </Card>
+        <Card className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
+        
+        
+        <ReactQuill
+        value={view} // Render the HTML content
+        readOnly={true} // Prevent editing
+        theme="snow" // Keep default styling
+        modules={{ toolbar: false }} // Remove the toolbar
+    />
+    </Card>
+    </div> */}
     </>
   )
 }

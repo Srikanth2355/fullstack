@@ -31,6 +31,25 @@ ul {
 ol {
   list-style-type: decimal !important;
 }
+.ant-drawer-header-title {
+  color: rgb(255 255 255 / 0.65) !important;
+}
+
+.ant-drawer-close{
+  color: rgb(255 255 255 / 0.65) !important;
+  font-size: 15px !important;
+}
+
+.ql-disabled .ql-editor {
+  /* Add your styles here */
+  border: none !important;
+  height: 200px !important;
+}
+
+.ql-container.ql-snow.ql-disabled{
+  border: none !important;
+  height: 200px !important;
+}
 
 
 /* :root {
