@@ -6,8 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser');
-const checkLoggedIn = require('./Middlewares/checkLoggedIn')
-
+const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const app = express()
 
 dotenv.config()

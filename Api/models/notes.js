@@ -7,6 +7,10 @@ const noteSchema = new mongoose.Schema(
             required: true,
             trim: true
         },
+        htmlcontent: {
+            type: String,
+            required: true,
+        },
         content: {
             type: String,
             required: true,
