@@ -6,6 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser');
+const checkLoggedIn = require('./Middlewares/checkLoggedIn')
 
 const app = express()
 
@@ -40,6 +41,13 @@ app.use('/api/user', (req,res,next)=>{
     delete require.cache[routepath];
     const userRoutes = require('./Routes/userRoutes')
     userRoutes(req,res,next)
+})
+
+app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
+    const routepath = require.resolve('./Routes/noteRoutes')
+    delete require.cache[routepath];
+    const noteRoutes = require('./Routes/noteRoutes')
+    noteRoutes(req,res,next)
 })
 
 
