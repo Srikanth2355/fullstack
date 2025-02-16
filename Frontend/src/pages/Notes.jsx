@@ -1,14 +1,18 @@
 import React, { Children, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Button, Card, notification } from "antd";
+import { Input, Button, Card, notification,Empty } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import {useLoading} from '../utils/loader';
+import axiosInstance from '../utils/axios';
 function Notes() {
     const user = useSelector((state) => state.user);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [view,setview] = useState("");
+    const [plainDescription, setPlainDescription] = useState("");
     const [blockaddingnote,setBlockaddingnote] = useState(false);
+    const {showLoading,hideLoading} = useLoading();
+    const [allNotes, setAllNotes] = useState([]);
   
     // Check if both fields are filled
     let isDisabled = title.trim() === "" || description.trim() === "" || (title.trim.length > 0 && title.trim().length < 100);
@@ -17,35 +21,80 @@ function Notes() {
         [{ header: [1, 2, 3, false] }],
         [{ size: ["small", false, "large", "huge"] }],
         ["bold", "italic", "underline"],
-        [{ list: "ordered" }],
-        [{ script: "sub" }, { script: "super" }],
+        [{ list: "ordered" }, { list: "bullet" }],
         [{ indent: "-1" }, { indent: "+1" }],
-        [{ direction: "rtl" }],
-        [{ color: [] }, { background: [] }],
+        [{ color: [] }],
         [{ align: [] }],
-        ["code-block"], 
         ["clean"],
     ];
 
+    useEffect(() => {
+        getAllNotes();
+    }, [])
+
     const AddNotes = () => {
-        console.log("Title:", title);
-        console.log("Description:", description);
         if(blockaddingnote){
             notification.error({
                 message: 'Error',
-                description: 'Maxium of 1000 characters are allowed.',
+                description: 'Maxium of 3000 characters are allowed.',
                 duration: 2,                
             });
             return;
         }
-        setview(description);
+        showLoading();
+        axiosInstance.post('/notes/addnote', {title: title, content: plainDescription, htmlcontent: description})
+        .then((response) => {
+            if(response.status === 200){
+                notification.success({
+                    message: 'Success',
+                    description: response.data.message,
+                    duration: 2,
+                });
+                setTitle("");
+                setDescription("");
+                getAllNotes();
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notification.error({
+                message: 'Error',
+                description: error.response.data.error,
+                duration: 2,
+            });
+        })
+        .finally(() => {
+            hideLoading();
+        });
+    }
+    const getAllNotes = () => {
+        showLoading();
+        axiosInstance.get('/notes/getallnotes')
+        .then((response) => {
+            if(response.status === 200){
+                setAllNotes(response.data.notes);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notification.error({
+                message: 'Error',
+                description: error.response.data.error,
+                duration: 5,
+            });
+        })
+        .finally(() => {
+            hideLoading();
+        })
     }
 
     const handleDescriptionChange = (value,delta,source,editor) => {
-        const max_chars = 1000;
-        const currentcharactes = editor.getLength();
+        const max_chars = 3000;
+        const currentcharacters = editor.getLength();
+        const text = editor.getText();
+        setPlainDescription((prev)=>text);
         setDescription((prev)=>value);
-        if(currentcharactes > max_chars){
+        if(currentcharacters > max_chars){
             setBlockaddingnote(true)
         }else{
             setBlockaddingnote(false)
@@ -55,19 +104,20 @@ function Notes() {
   
   return (
     <>
-        <Card className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[500px] mx-2">
-        <h2 className="text-xl font-semibold mb-4">Create a Note</h2>
+        {/* Add Note Form */}
+        <Card className=" my-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[500px] mx-2">
+            <h2 className="text-xl font-semibold mb-4">Create a Note</h2>
 
-        {/* Title Input */}
-        <Input
-            placeholder="Enter title...(max 150 characters)"
-            maxLength={150}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mb-2"
-        />
+            {/* Title Input */}
+            <Input
+                placeholder="Enter title...(max 150 characters)"
+                maxLength={150}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="mb-2"
+            />
 
-        {/* Description Editor (Fixed height, scrollable) */}
+            {/* Description Editor (Fixed height, scrollable) */}
         
             <ReactQuill
                 theme="snow"
@@ -92,48 +142,30 @@ function Notes() {
             Add Note
         </Button>
         </Card>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            <Card title="Default size card Default size card Default size card Default size card" className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
-                <ReactQuill
-                    value={view} // Render the HTML content
-                    readOnly={true} // Prevent editing
-                    theme="snow" // Keep default styling
-                    modules={{ toolbar: false }} // Remove the toolbar
-                />
-            </Card>
-            <Card title="Default size card" className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
-                <ReactQuill
-                    value={view} 
-                    readOnly={true} // Prevent editing
-                    theme="snow" // Keep default styling
-                    modules={{ toolbar: false }} // Remove the toolbar
-                />
-            </Card>
-            <Card title="Default size card Default size card Default size card Default size card" className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
-                <ReactQuill
-                    value={view} // Render the HTML content
-                    readOnly={true} // Prevent editing
-                    theme="snow" // Keep default styling
-                    modules={{ toolbar: false }} // Remove the toolbar
-                />
-            </Card>
-            <Card title="Default size card Default size card Default size card Default size card" className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
-                <ReactQuill
-                    value={''} // Render the HTML content
-                    readOnly={true} // Prevent editing
-                    theme="snow" // Keep default styling
-                    modules={{ toolbar: false }} // Remove the toolbar
-                />
-            </Card>
-            <Card title="Default size card Default size card Default size card Default size card" className=" mt-5 p-3 shadow-md rounded-lg border border-gray-300 min-h-[250px] mx-2">
-                <ReactQuill
-                    value={''} // Render the HTML content
-                    readOnly={true} // Prevent editing
-                    theme="snow" // Keep default styling
-                    modules={{ toolbar: false }} // Remove the toolbar
-                />
-            </Card>
-        </div>
+        {/* display notes */}
+        {
+            allNotes.length ==0 ?    
+            (<Empty description="No notes found" className='text-2xl font-semibold mt-5' />):
+            (<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 my-2'>
+                {allNotes.map((note,index)=>{
+                    return(
+                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2">
+                            <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
+                            <div className="h-[200px] overflow-y-hidden px-2">
+                                <p>{note.content}</p>
+                            </div>
+                            {/* <ReactQuill
+                                value={'note.content'} // Render the HTML content
+                                readOnly={true} // Prevent editing
+                                theme="snow" // Keep default styling
+                                modules={{ toolbar: false }} // Remove the toolbar
+                            /> */}
+                        </Card>
+                    )
+                })}
+            </div>
+            )
+        }
     </>
   )
 }

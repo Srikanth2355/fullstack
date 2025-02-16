@@ -43,12 +43,13 @@ ol {
 .ql-disabled .ql-editor {
   /* Add your styles here */
   border: none !important;
-  height: 200px !important;
+  height: 250px !important;
+  overflow-y: hidden !important;
 }
 
 .ql-container.ql-snow.ql-disabled{
   border: none !important;
-  height: 200px !important;
+  overflow-y: hidden !important;
 }
 
 

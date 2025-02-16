@@ -8,6 +8,7 @@ noterouter.post("/addnote", async (req, res) => {
         const note = new Note();
         note.title = note_data.title;
         note.content = note_data.content;
+        note.htmlcontent = note_data.htmlcontent;
         note.createdBy = req.user.id;
         await note.save();
         res.status(200).json({ message: "Note added successfully" });
@@ -16,7 +17,7 @@ noterouter.post("/addnote", async (req, res) => {
     }
 });
 
-noteRouter.get("/getnotes", async (req, res) => {
+noterouter.get("/getallnotes", async (req, res) => {
     try {
         const notes = await Note.find({ createdBy: req.user.id }).select('-sharedWith').sort({ createdAt: -1 }); // Get notes created by the logged in user
         res.status(200).json({ notes: notes });
