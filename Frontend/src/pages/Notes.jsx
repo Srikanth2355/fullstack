@@ -153,7 +153,7 @@ function Notes() {
                         <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2">
                             <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
                             <div className="h-[200px] overflow-hidden  px-2">
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor overflow-hidden'></div>
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
                             </div>
                             {/* <ReactQuill
                                 value={'note.content'} // Render the HTML content
