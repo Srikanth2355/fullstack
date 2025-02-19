@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {useLoading} from '../utils/loader';
 import axiosInstance from '../utils/axios';
+import DOMPurify from 'dompurify';
 function Notes() {
     const user = useSelector((state) => state.user);
     const [title, setTitle] = useState("");
@@ -151,8 +152,8 @@ function Notes() {
                     return(
                         <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2">
                             <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
-                            <div className="h-[200px] overflow-y-hidden px-2">
-                                <p>{note.content}</p>
+                            <div className="h-[200px] overflow-hidden  px-2">
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
                             </div>
                             {/* <ReactQuill
                                 value={'note.content'} // Render the HTML content
