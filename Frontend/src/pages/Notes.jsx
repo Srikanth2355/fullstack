@@ -1,11 +1,12 @@
 import React, { Children, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Button, Card, notification,Empty } from "antd";
+import { Input, Button, Card, notification,Empty, Modal, Typography, Popconfirm } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {useLoading} from '../utils/loader';
 import axiosInstance from '../utils/axios';
 import DOMPurify from 'dompurify';
+import {  EditOutlined, ShareAltOutlined, DeleteOutlined } from "@ant-design/icons";
 function Notes() {
     const user = useSelector((state) => state.user);
     const [title, setTitle] = useState("");
@@ -14,6 +15,11 @@ function Notes() {
     const [blockaddingnote,setBlockaddingnote] = useState(false);
     const {showLoading,hideLoading} = useLoading();
     const [allNotes, setAllNotes] = useState([]);
+    const { Title, Paragraph } = Typography;
+    const [edittitle,setEdittitle] = useState("");
+    const [editdescription,setEditdescription] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [shownotes,setShownotes] = useState({});
   
     // Check if both fields are filled
     let isDisabled = title.trim() === "" || description.trim() === "" || (title.trim.length > 0 && title.trim().length < 100);
@@ -102,6 +108,19 @@ function Notes() {
         }
         
     }
+
+    const onClose = () => {
+        setShowModal(false);
+    }
+
+    const showNoteDetails = (note) => {
+        showLoading();
+        setShownotes(note);
+        setEdittitle(note.title);
+        setEditdescription(note.content);
+        setShowModal(true);
+        hideLoading();
+    }
   
   return (
     <>
@@ -150,7 +169,7 @@ function Notes() {
             (<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 my-2'>
                 {allNotes.map((note,index)=>{
                     return(
-                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2">
+                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" onClick={()=>showNoteDetails(note)}>
                             <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
                             <div className="h-[200px] overflow-hidden  px-2">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
@@ -167,6 +186,56 @@ function Notes() {
             </div>
             )
         }
+
+        <Modal
+            open={showModal}
+            onCancel={onClose}
+            footer={null}
+            maskClosable={false} // Prevent closing on outside click
+            centered
+            className="rounded-lg !w-[95vw] !h[80vh] md:!w-[80vw] md:!h-[60vh] bg-white"
+        >
+            <div className='w-full h-full'>
+                <div className="flex justify-between items-center border-b pb-2">
+                    <Title level={4} className="mb-0">Note Details</Title>
+                    {/* <CloseOutlined className="text-lg cursor-pointer" onClick={onClose} /> */}
+                </div>
+
+                <Paragraph  className="text-lg font-semibold mt-4">{shownotes?.title}</Paragraph>
+
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(shownotes?.htmlcontent)}} className="!h-[60vh] md:!h-[40vh] overflow-y-auto p-2 border rounded-md ql-editor">
+                </div>
+
+                <div className="flex justify-end space-x-3 mt-4 border-t pt-3">
+                    <Button type="primary" shape="round" icon={<EditOutlined />}>
+                    Edit Note
+                    </Button>
+                    <Button type="primary" shape="round" icon={<ShareAltOutlined />} >
+                    Share Note
+                    </Button>
+                    
+                    {/* Delete with Confirmation Popup */}
+                    {/* onConfirm={onDelete} */}
+                    <Popconfirm
+                    title="Are you sure you want to delete this note?"
+                    description="Are you sure to delete this Todo?"
+                    onCancel={()=>{}}
+                    okText="Yes"
+                    cancelText="No"
+                    >
+                    <Button 
+                        icon={<DeleteOutlined />} 
+                        shape="round"
+                        className="!bg-red-600 text-white hover:!bg-red-600 hover:!border-none hover:!text-white"
+                    >
+                        Delete
+                    </Button>
+                    </Popconfirm>
+                </div>
+            </div>
+
+        </Modal>
+
     </>
   )
 }
