@@ -26,4 +26,22 @@ noterouter.get("/getallnotes", async (req, res) => {
     }
 });
 
+noterouter.post("/updatenote", async (req, res) => {
+    try{
+        const note_data = req.body;
+        const userid = req.user.id;
+        const findnote = await Note.findOne({ _id: note_data.id, createdBy: userid });
+        if (!findnote) {
+            return res.status(400).json({ error: "Note not found" });
+        }
+        findnote.title = note_data.title;
+        findnote.content = note_data.content;
+        findnote.htmlcontent = note_data.htmlcontent;
+        await findnote.save();
+        res.status(200).json({ message: "Note updated successfully" });
+    }catch(error){
+        res.status(500).json({ error: error.message }); 
+    }
+});
+
 module.exports = noterouter;
