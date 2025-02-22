@@ -45,6 +45,10 @@
   overflow-y: hidden !important;
 }
 
+.customforsmallscreen .ql-container.ql-snow {
+  height: 450px !important;
+}
+
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
