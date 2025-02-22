@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser');
 const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
+const userRoutes = require('./Routes/userRoutes')
 const app = express()
 
 dotenv.config()
@@ -36,9 +37,9 @@ const limit = rateLimit({
 app.use(limit);
 
 app.use('/api/user', (req,res,next)=>{
-    const routepath = require.resolve('./Routes/userRoutes')
-    delete require.cache[routepath];
-    const userRoutes = require('./Routes/userRoutes')
+    // const routepath = require.resolve('./Routes/userRoutes')
+    // delete require.cache[routepath];
+    // const userRoutes = require('./Routes/userRoutes')
     userRoutes(req,res,next)
 })
 
