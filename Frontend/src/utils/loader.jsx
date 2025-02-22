@@ -19,7 +19,7 @@ export const LoadingProvider = ({ children }) => {
         {children}
         {/* Render the loader conditionally */}
         {isLoading && (
-          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }} className="fixed top-0 left-0 w-full h-full  z-50 flex items-center justify-center"> {/* Overlay */}
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }} className="fixed top-0 left-0 w-full h-full  z-[1200] flex items-center justify-center"> {/* Overlay */}
             <Spin size="large" /> {/* Your loader component */}
           </div>
         )}
