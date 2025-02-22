@@ -1,7 +1,7 @@
 import React, { Children, useEffect, useState } from 'react';
 import { Layout, Menu, notification, theme, Drawer } from 'antd';
 import { DeleteOutlined,MenuUnfoldOutlined,MenuFoldOutlined, LogoutOutlined, BookOutlined, ShareAltOutlined, InboxOutlined } from '@ant-design/icons';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet,useLocation } from 'react-router-dom';
 import { useLoading } from '../utils/loader.jsx';
 import axiosInstance from '../utils/axios';
 
@@ -9,6 +9,7 @@ const { Sider } = Layout;
 
 function HomeLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {showLoading, hideLoading} = useLoading();
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
@@ -47,7 +48,26 @@ function HomeLayout() {
 
   const handleMenuClick = (e) => {
     setSelectedKey(e.key);
+    if(e.key === '1'){
+      navigate('/notes');
+    }else if(e.key === '2'){
+      navigate('/sharednotes');
+    }else if(e.key === '3'){
+      navigate('/sharedwithme');
+    }
+    setOpendrawer(false);
   };
+
+  useEffect(() => {
+    if(location.pathname === '/notes'){
+      setSelectedKey('1');
+    }else if(location.pathname === '/sharednotes'){
+      setSelectedKey('2');
+    }else if(location.pathname === '/sharedwithme'){
+      setSelectedKey('3');
+    }
+
+  },[])
 
   const items = [
     {
@@ -149,8 +169,7 @@ function HomeLayout() {
             <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">takenotes</p> 
 
           </div>
-          <div className='mt-12 md:mt-0' style={{
-            height: "100vh",
+          <div className='mt-12 md:mt-0 h-[90vh] md:h-[100vh]' style={{
             overflowY: "auto",
             padding: "8px",
           }}>

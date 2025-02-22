@@ -46,11 +46,6 @@ function Notes() {
         setIsDisabled(title.trim() === "" || description.trim() === "" || plainDescription.trim().length <= 1 ||(title.trim.length > 0 && title.trim().length < 100));
     },[title,description])
 
-    // Disable button if edittitle or editdescription is empty
-    useEffect(() => {
-        setDisableUpdateNote(edittitle.trim() === "" || editdescription.trim() === "" || editplainDescription.trim().length <= 1 ||(edittitle.trim.length > 0 && edittitle.trim().length < 100));
-    },[edittitle,editdescription])
-
     // Add notes to the database
     const AddNotes = () => {
         if(blockaddingnote){
@@ -162,6 +157,7 @@ function Notes() {
     const showEditNote = () => {
         setEdittitle(shownotes.title);
         setEditdescription(shownotes.htmlcontent);
+        setEditplainDescription(shownotes.content);
         setEditnote(true);
     }
 
@@ -176,7 +172,9 @@ function Notes() {
             hideLoading();
             return;
         }
-        if(disableUpdateNote){
+        let disable = edittitle.trim() === "" || editdescription.trim() === "" || editplainDescription.trim().length <= 1 ||(edittitle.trim.length > 0 && edittitle.trim().length < 100);
+
+        if(disable){
             notification.error({
                 message: 'Error',
                 description: 'Title and Description are required fields.',
@@ -330,9 +328,9 @@ function Notes() {
                             <Button type="primary" shape="round" icon={<EditOutlined />} onClick={showEditNote}>
                             Edit Note
                             </Button>
-                            <Button type="primary" shape="round" icon={<ShareAltOutlined />} >
+                            {/* <Button type="primary" shape="round" icon={<ShareAltOutlined />} >
                             Share Note
-                            </Button>
+                            </Button> */}
                             
                             {/* Delete with Confirmation Popup */}
                             <Popconfirm
