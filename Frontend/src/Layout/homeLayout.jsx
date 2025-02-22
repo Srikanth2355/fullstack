@@ -64,12 +64,12 @@ function HomeLayout() {
       key: '3',
       label: "Shared with me",
       icon: <InboxOutlined className='text-sm md:text-md lg:text-xl' />
-    },
-    {
-      key: '4',
-      label: "Deleted Notes",
-      icon: <DeleteOutlined  className='text-sm md:text-md lg:text-xl' />
     }
+    // {
+    //   key: '4',
+    //   label: "Deleted Notes",
+    //   icon: <DeleteOutlined  className='text-sm md:text-md lg:text-xl' />
+    // }
   ]
   return (
     <>
@@ -86,7 +86,7 @@ function HomeLayout() {
         style={{background: '#001529'}}
       >
         <div>
-          <Menu theme="dark" mode="vertical" items={items} selectedKeys={[selectedKey]} onClick={() => setCollapsed(false)} />
+          <Menu theme="dark" mode="vertical" items={items} selectedKeys={[selectedKey]} onClick={handleMenuClick}/>
         </div>
       
         <div className="mb-4 absolute bottom-0 w-full">
@@ -143,16 +143,12 @@ function HomeLayout() {
         </div>
       </Sider>
       <Layout className='min-h-screen md:ml-[200px]'>
-        {
-          collapsed && (
 
-          <div className=' w-full p-2 px-4 flex' style={{background: '#001529',position: 'fixed', zIndex: 1000}}>
+          <div className='md:hidden w-full p-2 px-4 flex' style={{background: '#001529',position: 'fixed', zIndex: 1000}}>
             <MenuUnfoldOutlined style={{ fontSize: '20px', color: 'white' }}  onClick={(value) => setOpendrawer(!opendrawer)}/>
             <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">takenotes</p> 
 
           </div>
-          )
-        }
           <div className='mt-12 md:mt-0' style={{
             height: "100vh",
             overflowY: "auto",

@@ -7,6 +7,8 @@ import { LoadingProvider } from './utils/loader.jsx';
 import ProtectedRoute from './utils/protectedRoute.jsx';
 import HomeLayout from './Layout/homeLayout.jsx';
 import Notes from './pages/Notes.jsx';  
+import SharedNotes from './pages/SharedNotes.jsx';
+import SharedNotesWithMe from './pages/SharedNotesWithMe.jsx';
 
 function App() {
   return (
@@ -18,6 +20,10 @@ function App() {
             <Route path="/" element={<Navigate to="/notes" replace />} />
             <Route path="" element={<Navigate to="/notes" replace />} />
             <Route path="/notes" element={<Notes />} />
+            <Route path="/sharednotes" element={<SharedNotes />} />
+            <Route path="/sharedwithme" element={<SharedNotesWithMe />} />
+
+
 
           </Route>
         </Route>

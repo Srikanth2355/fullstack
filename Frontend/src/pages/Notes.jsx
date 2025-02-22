@@ -210,6 +210,34 @@ function Notes() {
             hideLoading();
         });
     }
+
+    const deleteNote = () => {
+        showLoading();
+        axiosInstance.post('/notes/deletenote', {id: shownotes._id})
+        .then((response) => {
+            if(response.status === 200){
+                notification.success({
+                    message: 'Success',
+                    description: response.data.message,
+                    duration: 5,
+                });
+                onClose();
+                getAllNotes();
+            }
+            
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notification.error({
+                message: 'Error',
+                description: error.response.data.error,
+                duration: 5,
+            });
+        })
+        .finally(() => {
+            hideLoading();
+        });
+    }
   
   return (
     <>
@@ -307,11 +335,11 @@ function Notes() {
                             </Button>
                             
                             {/* Delete with Confirmation Popup */}
-                            {/* onConfirm={onDelete} */}
                             <Popconfirm
                             title="Are you sure you want to delete this note?"
-                            description="Are you sure to delete this Todo?"
+                            description="Note Once deleted cannot be recovered."
                             onCancel={()=>{}}
+                            onConfirm={deleteNote}
                             okText="Yes"
                             cancelText="No"
                             >
@@ -348,7 +376,16 @@ function Notes() {
                             value={editdescription}
                             onChange={handleDescriptionChange}
                             placeholder="Write your note here..."
-                            className=""
+                            className="hidden md:block"
+                            modules={{toolbar: toolbarOptions}}
+                            preserveWhitespace={true}
+                        />
+                        <ReactQuill
+                            theme="snow"
+                            value={editdescription}
+                            onChange={handleDescriptionChange}
+                            placeholder="Write your note here..."
+                            className="block customforsmallscreen !h-[60vh] md:hidden"
                             modules={{toolbar: toolbarOptions}}
                             preserveWhitespace={true}
                         />

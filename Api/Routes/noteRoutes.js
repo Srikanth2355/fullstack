@@ -44,4 +44,19 @@ noterouter.post("/updatenote", async (req, res) => {
     }
 });
 
+noterouter.post("/deletenote", async (req, res) => {
+    try{
+        const note_data = req.body;
+        const userid = req.user.id;
+        const findnote = await Note.findOne({ _id: note_data.id, createdBy: userid });
+        if (!findnote) {
+            return res.status(400).json({ error: "Note not found" });
+        }
+        await Note.deleteOne({ _id: note_data.id });
+        res.status(200).json({ message: "Note deleted successfully" });
+    }catch(error){
+        res.status(500).json({ error: error.message }); 
+    }
+});
+
 module.exports = noterouter;
