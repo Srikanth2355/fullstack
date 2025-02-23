@@ -8,6 +8,7 @@ const helmet = require('helmet')
 const cookieParser = require('cookie-parser');
 const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const userRoutes = require('./Routes/userRoutes')
+const noteRoutes = require('./Routes/noteRoutes')
 const app = express()
 const path = require("path");
 
@@ -18,13 +19,7 @@ app.use(express.json())
 app.use(mongoSanitize())
 app.use(helmet())
 app.use(cookieParser());
-// Serve the static files from the React build folder
-app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
-// // Catch-all route to serve index.html for React Router
-// app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
-//   });
 
 connectDB()
 
@@ -45,19 +40,20 @@ const limit = rateLimit({
 app.use(limit);
 
 app.use('/api/user', (req,res,next)=>{
-    // const routepath = require.resolve('./Routes/userRoutes')
-    // delete require.cache[routepath];
-    // const userRoutes = require('./Routes/userRoutes')
     userRoutes(req,res,next)
 })
 
 app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
-    const routepath = require.resolve('./Routes/noteRoutes')
-    delete require.cache[routepath];
-    const noteRoutes = require('./Routes/noteRoutes')
     noteRoutes(req,res,next)
 })
 
+// Serve the static files from the React build folder
+app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+// // Catch-all route to serve index.html for React Router
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
+  });
 
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`Server running on port ${port}`))   
