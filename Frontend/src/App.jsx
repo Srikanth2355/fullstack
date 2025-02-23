@@ -9,6 +9,7 @@ import HomeLayout from './Layout/homeLayout.jsx';
 import Notes from './pages/Notes.jsx';  
 import SharedNotes from './pages/SharedNotes.jsx';
 import SharedNotesWithMe from './pages/SharedNotesWithMe.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx'
 
 function App() {
   return (
@@ -22,13 +23,11 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/sharednotes" element={<SharedNotes />} />
             <Route path="/sharedwithme" element={<SharedNotesWithMe />} />
-
-
-
           </Route>
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Routes>
     
     </BrowserRouter>

@@ -13,7 +13,7 @@ const getOTPTemplate = (name, otp) => {
     return template;
   };
 
-async function sendEmail(email, otp,name) {
+async function sendEmail(email, otp,name,subject="OTP for Email Verification") {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -24,7 +24,7 @@ async function sendEmail(email, otp,name) {
   const mailOptions = { 
     from: process.env.APP_EMAIL_1, 
     to:email, 
-    subject:"OTP for Email Verification",
+    subject:subject,
     html: getOTPTemplate(name, otp), 
 };
 try{

@@ -118,5 +118,49 @@ userrouter.post("/generateotp", async (req, res) => {
     }
 });
 
+// Api to send otp for reset password
+userrouter.post("/forgot-password", async (req, res) => {
+    try {
+        const userdata = req.body;
+        const existing_user = await User.findOne({ email:
+        userdata.email });
+        if (!existing_user) {
+            return res.status(400).json({ error: "User not found" });
+        }
+        const otp = generateOTP(userdata.email);
+        if (otp?.error) {
+            return res.status(400).json({ error: otp.error });
+        }
+        const sendemail = await sendEmail(userdata.email,otp,'',"OTP for resetting password");
+        if(sendemail){
+            res.status(200).json({ message: "OTP sent successfully" });
+        }else{
+            res.status(500).json({ error: "Failed to send OTP" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }    
+});
+
+// Api to handle reset password
+userrouter.post("/reset-password", async (req, res) => {
+    try{
+        const user_data = req.body;
+        const verifyotp = await verifyOTP(user_data.email, user_data.otp);
+        if (!verifyotp) {
+            return res.status(400).json({ error: "OTP verification failed! Please try again" });
+        }
+        const user = await User.findOne({ email: user_data.email });
+        if (!user) {
+            return res.status(400).json({ error: "User not found" });
+        }
+        user.password = await bcrypt.hash(user_data.password, 10); // Hash user_data.password;
+        await user.save();
+        res.status(200).json({ message: "Password has been reset successfully. Please login" });
+    }catch(error){
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = userrouter;
