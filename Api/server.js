@@ -21,10 +21,10 @@ app.use(cookieParser());
 // Serve the static files from the React build folder
 app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
-// Catch-all route to serve index.html for React Router
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
-  });
+// // Catch-all route to serve index.html for React Router
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
+//   });
 
 connectDB()
 
