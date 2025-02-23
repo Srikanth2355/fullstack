@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const userRoutes = require('./Routes/userRoutes')
 const app = express()
+const path = require("path");
 
 dotenv.config()
 
@@ -17,6 +18,13 @@ app.use(express.json())
 app.use(mongoSanitize())
 app.use(helmet())
 app.use(cookieParser());
+// Serve the static files from the React build folder
+app.use(express.static(path.join(__dirname, "../Frontend/build")));
+
+// Catch-all route to serve index.html for React Router
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Frontend/build", "index.html"));
+  });
 
 connectDB()
 
