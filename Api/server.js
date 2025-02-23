@@ -12,6 +12,8 @@ const noteRoutes = require('./Routes/noteRoutes')
 const app = express()
 const path = require("path");
 
+app.set('trust proxy', 1);
+
 dotenv.config()
 
 app.use(cors())
@@ -25,7 +27,7 @@ connectDB()
 
 const limit = rateLimit({
     windowMs: 30 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 300, // limit each IP to 300 requests per windowMs
     message: async (req,res)=>{
         const retryAfter = Math.ceil((req.rateLimit.resetTime - new Date()) / (60 * 1000)); // Remaining time in minutes
         res.status(429).json({
