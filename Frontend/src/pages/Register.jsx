@@ -27,7 +27,7 @@ const Register = () => {
       }else if(response.status === 400){
         notification.error({
           message: 'Error',
-          description: response.data.error, // Use the error message from the response
+          description: response.data.message, // Use the error message from the response
           duration: 5
         });
       }
