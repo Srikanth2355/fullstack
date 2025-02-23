@@ -97,11 +97,16 @@ const LoginForm = () => {
                   Login
               </Button>
               </Form.Item>
+              <div className="text-right -mt-2">
+              <a  onClick={() => navigate('/forgotpassword')} className="text-blue-500 hover:underline">
+                  Forgot Password
+              </a>
+              </div>
 
               {/* Register Link */}
               <div className="text-center">
               <span>Don't have an account? </span>
-              <a href="/register" className="text-blue-500 hover:underline">
+              <a onClick={() => navigate('/register')} className="text-blue-500 hover:underline">
                   Register here
               </a>
               </div>
