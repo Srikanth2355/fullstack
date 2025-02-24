@@ -3,7 +3,9 @@ import { Form, Input, Button, Typography,Spin, notification } from 'antd';
 import { LockOutlined, MailOutlined, UserOutlined,SafetyOutlined  } from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useLoading } from '../utils/loader';
 const { Title } = Typography;
+
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -12,8 +14,9 @@ const Register = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [otp, setOtp] = useState('');
+  const {showLoading, hideLoading} = useLoading();
   const sendOTP = (values) => {
-    setLoading(true);
+    showLoading();
     axiosInstance.post('/user/generateotp',{email:values.email,name:values.name})
     .then((response) => {
       if(response.status === 200){
@@ -31,7 +34,7 @@ const Register = () => {
           duration: 5
         });
       }
-      setLoading(false);
+      hideLoading()
 
     })
     .catch((error) => {
@@ -41,20 +44,20 @@ const Register = () => {
         description: error.response.data.error, // Use the error message from the response
         duration: 5
       });
-      setLoading(false);
+      hideLoading()
     });
     
   };
 
   const handleOTPSubmit = (values) => {
-    setLoading(true);
-    if(!otp || otp.trim().length == 0){
+    showLoading();
+    if(!otp || otp.trim().length == 0 || otp.length < 6){
       notification.error({
         message: 'Error',
-        description: 'Please enter OTP', // Use the error message from the response
+        description: 'Please enter valid OTP', // Use the error message from the response
         duration: 5
       });
-      setLoading(false);
+      hideLoading()
       return;
     }
     axiosInstance.post('/user/register',{...userData,otp:otp})
@@ -73,7 +76,7 @@ const Register = () => {
           duration: 5
         });
       }
-      setLoading(false);
+      hideLoading()
 
     })
     .catch((error) => {
@@ -83,7 +86,7 @@ const Register = () => {
         description: error.response.data.error, // Use the error message from the response
         duration: 3
       });
-      setLoading(false);
+      hideLoading()
     });
   };
 
@@ -92,7 +95,7 @@ const Register = () => {
       className="flex items-center justify-center h-screen bg-gray-100"
       style={{ backgroundColor: '#f9f9f9' }} // Light background color
     >
-      {
+      {/* {
         loading && <div
           style={{
             position: 'fixed',
@@ -109,7 +112,7 @@ const Register = () => {
         >
           <Spin size="large" />
         </div>
-      }
+      } */}
       <div
         className="p-6 bg-white rounded shadow-md w-full max-w-sm"
         style={{
