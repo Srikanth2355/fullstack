@@ -26,7 +26,7 @@ app.use(cookieParser());
 connectDB()
 
 const limit = rateLimit({
-    windowMs: 30 * 60 * 1000, // 15 minutes
+    windowMs: 30 * 60 * 1000, // 30 minutes
     max: 300, // limit each IP to 300 requests per windowMs
     message: async (req,res)=>{
         const retryAfter = Math.ceil((req.rateLimit.resetTime - new Date()) / (60 * 1000)); // Remaining time in minutes
@@ -50,12 +50,12 @@ app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
 })
 
 // Serve the static files from the React build folder
-app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+// app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
 // // Catch-all route to serve index.html for React Router
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
-  });
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
+//   });
 
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`Server running on port ${port}`))   

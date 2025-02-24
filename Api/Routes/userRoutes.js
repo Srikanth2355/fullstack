@@ -6,31 +6,8 @@ const loginMiddleware = require("../Middlewares/login");
 const bcrypt = require("bcrypt");
 const {signJWT,verifyJWT} = require("../utils/jwt");
 const {checkLoggedIn} = require("../Middlewares/checkLoggedIn");
-const otpStorage = new Map();
 const {sendEmail} = require("../utils/EmailManager");
-
-// Function to generate OTP and store it in Map
-function generateOTP(email) {
-     // Check if OTP already exists and hasn't expired
-     if (otpStorage.has(email)) {
-        const storedOTP = otpStorage.get(email);
-        if (storedOTP.expiresAt > Date.now()) {
-           return { error: "OTP can only be generated once every 10 minutes" }
-        }
-    }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
-    otpStorage.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 }); // Expires in 10 mins
-    // Automatically delete OTP after 10 minutes
-    setTimeout(() => otpStorage.delete(email), 10 * 60 * 1000);
-  
-    return otp;
-}
-
-// Function to verify OTP
-function verifyOTP(email, otp) {
-    const storedOTP = otpStorage.get(email);
-    return storedOTP && storedOTP.otp === otp && storedOTP.expiresAt > Date.now();
-}
+const {generateOTP,verifyOTP} = require("../utils/OTPManager");
 
 userrouter.post("/register",registerMiddleware, async (req, res) => {
     try {
@@ -39,6 +16,7 @@ userrouter.post("/register",registerMiddleware, async (req, res) => {
         if (!verifyotp) {
             return res.status(400).json({ error: "OTP verification failed! Please try again" });
         }
+        const otpdeleted = await deleteOTP(user_data.email);
         const existing_user = await User.findOne({ email: user_data.email });
         if (existing_user) {
             return res.status(400).json({ error: "User already exists" });
