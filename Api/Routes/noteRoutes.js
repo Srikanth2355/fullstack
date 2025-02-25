@@ -65,10 +65,10 @@ noterouter.get("/getnote/:id", async (req, res) => {
         // , createdBy: userid
         const findnote = await Note.findOne({ _id: req.params.id });
         if (!findnote) {
-            return res.status(400).json({ error: "Note not found" });
+            return res.status(400).json({ message: "Note not found" });
         }
         if(findnote.createdBy != userid){
-            return res.status(400).json({ error: "Access denied to this note. Plesae contact the owner to get access" });
+            return res.status(400).json({ message: "Access denied to this note. Plesae contact the owner to get access" });
         }
         res.status(200).json({ note: findnote });
     }catch(error){

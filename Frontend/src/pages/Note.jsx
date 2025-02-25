@@ -1,18 +1,20 @@
 import React,{useEffect, useState} from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify';
-import { Input, Button, Card, notification,Empty, Modal, Typography, Popconfirm } from "antd";
+import { Input, Button, notification,Empty, Typography, Popconfirm } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import {  EditOutlined, ShareAltOutlined, DeleteOutlined } from "@ant-design/icons";
+import {  EditOutlined, ShareAltOutlined, DeleteOutlined, BackwardOutlined } from "@ant-design/icons";
 import axiosInstance from '../utils/axios';
 import { useLoading } from '../utils/loader';
 
 const Note = () => {  
-    const {showLoading,hideLoading} = useLoading();
-    const { id } = useParams();
-    const [shownotes,setShownotes] = useState({});
+    const navigate = useNavigate();
     const { Title, Paragraph } = Typography;
+    const { id } = useParams();
+    const [blockaddingnote,setBlockaddingnote] = useState(false);
+    const {showLoading,hideLoading} = useLoading();
+    const [shownotes,setShownotes] = useState({});
     
     const [editnote,setEditnote] = useState(false);
     const [edittitle,setEdittitle] = useState("");
@@ -58,10 +60,116 @@ const Note = () => {
                 description: error.response.data.message,
                 duration: 5,
             })
+            navigate('/notes');
         })
         .finally(() => {
             hideLoading();
         })
+    }
+
+    const showEditNote = () => {
+        setEdittitle(shownotes.title);
+        setEditdescription(shownotes.htmlcontent);
+        setEditplainDescription(shownotes.content);
+        setEditnote(true);
+    }
+
+    const handleDescriptionChange = (value,delta,source,editor) => {
+        const max_chars = 3000;
+        const currentcharacters = editor.getLength();
+        const text = editor.getText();
+        setEditdescription((prev)=>value);
+        setEditplainDescription((prev)=>text);
+        if(currentcharacters > max_chars){
+            setBlockaddingnote(true)
+        }else{
+            setBlockaddingnote(false)
+        }
+        
+    }
+    const updateNote = () => {
+        showLoading();
+        if(blockaddingnote){
+            notification.error({
+                message: 'Error',
+                description: 'Maxium of 3000 characters are allowed.',
+                duration: 5,                
+            });
+            hideLoading();
+            return;
+        }
+        let disable = edittitle.trim() === "" || editdescription.trim() === "" || editplainDescription.trim().length <= 1 ||(edittitle.trim.length > 0 && edittitle.trim().length < 100);
+
+        if(disable){
+            notification.error({
+                message: 'Error',
+                description: 'Title and Description are required fields.',
+                duration: 5,
+            });
+            hideLoading();
+            return;
+        }
+        axiosInstance.post('/notes/updatenote', {id: shownotes._id, title: edittitle, content: editplainDescription, htmlcontent: editdescription})
+        .then((response) => {
+            if(response.status === 200){
+                notification.success({
+                    message: 'Success',
+                    description: response.data.message,
+                    duration: 2,
+                });
+                onClose();
+                getnotesdata();
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notification.error({
+                message: 'Error',
+                description: error.response.data.error,
+                duration: 2,
+            });
+        })
+        .finally(() => {
+            hideLoading();
+        });
+    }
+
+    const onClose = () => {
+        cancelEditNote();
+    }
+
+    const cancelEditNote = () => {
+        setEdittitle("");
+        setEditdescription("");
+        setEditplainDescription("");
+        setEditnote(false);
+    }
+
+    const deleteNote = () => {
+        showLoading();
+        axiosInstance.post('/notes/deletenote', {id: shownotes._id})
+        .then((response) => {
+            if(response.status === 200){
+                notification.success({
+                    message: 'Success',
+                    description: response.data.message,
+                    duration: 5,
+                });
+                navigate('/notes');
+            }
+            
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notification.error({
+                message: 'Error',
+                description: error.response.data.error,
+                duration: 5,
+            });
+        })
+        .finally(() => {
+            hideLoading();
+        });
     }
           
     return (
@@ -79,22 +187,25 @@ const Note = () => {
                                 </div>
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(shownotes?.htmlcontent)}} className="!h-[70vh] md:!h-[60vh] mt-2 overflow-y-auto p-2 border rounded-md custom-scrollbar ql-editor">
                                 </div>
-                                {/* onClick={showEditNote} */}
+                                
                                 <div className="flex justify-end space-x-3 mt-4 border-t pt-3">
-                                    <Button type="primary" shape="round" icon={<EditOutlined />} >
+                                    <Button color="primary" variant='outlined' shape="round" icon={<BackwardOutlined /> } onClick={() => navigate(-1)} >
+                                    Back
+                                    </Button>
+                                    <Button type="primary" shape="round" icon={<EditOutlined />} onClick={showEditNote} >
                                     Edit Note
                                     </Button>
                                     {/* <Button type="primary" shape="round" icon={<ShareAltOutlined />} >
                                     Share Note
                                     </Button> */}
                                     
-                                    {/* onConfirm={deleteNote} */}
+                                    
                                     {/* Delete with Confirmation Popup */}
                                     <Popconfirm
                                     title="Are you sure you want to delete this note?"
                                     description="Note Once deleted cannot be recovered."
                                     onCancel={()=>{}}
-                                    
+                                    onConfirm={deleteNote}
                                     okText="Yes"
                                     cancelText="No"
                                     >
@@ -109,8 +220,8 @@ const Note = () => {
                                 </div>
                             </div>
                         ):(
-                            <div className='w-full h-full'>
-                                <div className="flex justify-between items-center border-b pb-2">
+                            <div className=' h-full p-2 md:mx-3 md:p-3 my-4 rounded-2xl bg-white'>
+                                <div className="flex justify-between items-center  pb-2">
                                     <Title level={4} className="mb-0">Edit Note</Title>
                                 </div>
                                 <Input
@@ -126,20 +237,10 @@ const Note = () => {
                                     value={editdescription}
                                     onChange={handleDescriptionChange}
                                     placeholder="Write your note here..."
-                                    className="hidden md:block"
+                                    className="!h-[70vh] md:!h-[60vh] custom-scrollbar customforsmallscreen scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-200"
                                     modules={{toolbar: toolbarOptions}}
                                     preserveWhitespace={true}
                                 />
-                                <ReactQuill
-                                    theme="snow"
-                                    value={editdescription}
-                                    onChange={handleDescriptionChange}
-                                    placeholder="Write your note here..."
-                                    className="block customforsmallscreen !h-[60vh] md:hidden"
-                                    modules={{toolbar: toolbarOptions}}
-                                    preserveWhitespace={true}
-                                />
-        
                                 <div className="flex justify-end space-x-3 mt-4 border-t pt-3">
                                     <Button type="primary" shape="round" onClick={updateNote}>
                                     Save Note
