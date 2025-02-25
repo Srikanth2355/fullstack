@@ -59,4 +59,21 @@ noterouter.post("/deletenote", async (req, res) => {
     }
 });
 
+noterouter.get("/getnote/:id", async (req, res) => {
+    try{
+        const userid = req.user.id;
+        // , createdBy: userid
+        const findnote = await Note.findOne({ _id: req.params.id });
+        if (!findnote) {
+            return res.status(400).json({ error: "Note not found" });
+        }
+        if(findnote.createdBy != userid){
+            return res.status(400).json({ error: "Access denied to this note. Plesae contact the owner to get access" });
+        }
+        res.status(200).json({ note: findnote });
+    }catch(error){
+        res.status(500).json({ error: error.message }); 
+    }
+})
+
 module.exports = noterouter;

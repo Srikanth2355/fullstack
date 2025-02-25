@@ -49,6 +49,28 @@
   height: 450px !important;
 }
 
+@layer utilities {
+  /* Custom scrollbar for a specific div */
+  .custom-scrollbar::-webkit-scrollbar {
+      width: 8px; /* Narrower scrollbar */
+      border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+      background: lightgray; /* Light background */
+      border-radius: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgb(255 255 255 / 0.65); /* Match your app color */
+      border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgb(255 255 255 / 0.65);; /* Darker on hover */
+  }
+}
+
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

@@ -7,6 +7,7 @@ import {useLoading} from '../utils/loader';
 import axiosInstance from '../utils/axios';
 import DOMPurify from 'dompurify';
 import {  EditOutlined, ShareAltOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useNavigate } from 'react-router-dom';
 function Notes() {
     const user = useSelector((state) => state.user);
     const [isDisabled, setIsDisabled] = useState(true);
@@ -21,9 +22,9 @@ function Notes() {
     const [edittitle,setEdittitle] = useState("");
     const [editdescription,setEditdescription] = useState("");
     const [editplainDescription,setEditplainDescription] = useState("");
-    const [disableUpdateNote,setDisableUpdateNote] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [shownotes,setShownotes] = useState({});
+    const navigate = useNavigate();
     
     const toolbarOptions = [
         [{ header: [1, 2, 3, false] }],
@@ -284,7 +285,7 @@ function Notes() {
             (<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 my-2'>
                 {allNotes.map((note,index)=>{
                     return(
-                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" onClick={()=>showNoteDetails(note)}>
+                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" onClick={()=>navigate(`/notes/${note._id}`)}>
                             <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
                             <div className="h-[220px] overflow-hidden  px-2 cursor-pointer">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
