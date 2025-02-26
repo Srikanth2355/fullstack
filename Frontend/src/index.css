@@ -45,8 +45,87 @@
   overflow-y: hidden !important;
 }
 
-.customforsmallscreen .ql-container.ql-snow {
-  height: 450px !important;
+.customforsmallscreen .ql-container.ql-snow  {
+  height: 60vh !important;
+  overflow-y: scroll !important;
+}
+
+.ql-size-8px {
+  font-size: 8px ;
+}
+
+.ql-size-12px {
+  font-size: 12px;
+}
+
+.ql-size-16px {
+  font-size: 16px;
+}
+
+.ql-size-20px {
+  font-size: 20px;
+}
+
+.ql-size-24px {
+  font-size: 24px;
+}
+
+.ql-size-28px {
+  font-size: 28px;
+}
+
+.ql-size-32px {
+  font-size: 32px;
+}
+@media (min-width: 768px) {
+  .customforsmallscreen .ql-container.ql-snow {
+    height: 55vh !important;
+  }
+  .customforsmallscreen .ql-container.ql-snow .ql-editor {
+    height: unset !important;
+  }
+
+  .custom-scrollbar .ql-container.ql-snow .ql-editor::-webkit-scrollbar {
+    width: 8px; /* Narrower scrollbar */
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar .ql-container.ql-snow .ql-editor::-webkit-scrollbar-track {
+      background: lightgray; /* Light background */
+      border-radius: 8px;
+  }
+
+  .custom-scrollbar .ql-container.ql-snow .ql-editor::-webkit-scrollbar-thumb {
+      background: rgb(255 255 255 / 0.65); /* Match your app color */
+      border-radius: 10px;
+  }
+
+  .custom-scrollbar .ql-container.ql-snow .ql-editor::-webkit-scrollbar-thumb:hover {
+      background: rgb(255 255 255 / 0.65);; /* Darker on hover */
+  }
+}
+
+
+@layer utilities {
+  /* Custom scrollbar for a specific div */
+  .custom-scrollbar::-webkit-scrollbar {
+      width: 8px; /* Narrower scrollbar */
+      border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+      background: lightgray; /* Light background */
+      border-radius: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgb(255 255 255 / 0.65); /* Match your app color */
+      border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgb(255 255 255 / 0.65);; /* Darker on hover */
+  }
 }
 
 

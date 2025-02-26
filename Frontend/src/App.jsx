@@ -1,36 +1,42 @@
 import './App.css'
-import Login from './pages/Login.jsx'
-import Home from './Home'
-import Register from './pages/Register.jsx'
 import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom'
+import { Suspense, lazy } from "react";
 import { LoadingProvider } from './utils/loader.jsx';
-import ProtectedRoute from './utils/protectedRoute.jsx';
-import HomeLayout from './Layout/homeLayout.jsx';
-import Notes from './pages/Notes.jsx';  
-import SharedNotes from './pages/SharedNotes.jsx';
-import SharedNotesWithMe from './pages/SharedNotesWithMe.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx'
+import LazyLoader from "./utils/lazyLoader.jsx";
+
+const Login =lazy(()=>import('./pages/Login.jsx'));
+const Register =lazy(()=>import('./pages/Register.jsx'));
+const ProtectedRoute =lazy(()=>import('./utils/protectedRoute.jsx'));
+const HomeLayout =lazy(()=>import('./Layout/homeLayout.jsx'));
+const Notes =lazy(()=>import('./pages/Notes.jsx'));  
+const SharedNotes =lazy(()=>import('./pages/SharedNotes.jsx'));
+const SharedNotesWithMe =lazy(()=>import('./pages/SharedNotesWithMe.jsx'));
+const ForgotPassword =lazy(()=>import('./pages/ForgotPassword.jsx'));
+const Note = lazy(()=>import('./pages/Note.jsx'));
 
 function App() {
   return (
     <LoadingProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route element={ <HomeLayout /> }>
-            <Route path="/" element={<Navigate to="/notes" replace />} />
-            <Route path="" element={<Navigate to="/notes" replace />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/sharednotes" element={<SharedNotes />} />
-            <Route path="/sharedwithme" element={<SharedNotesWithMe />} />
-          </Route>
-        </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-      </Routes>
-    
-    </BrowserRouter>
+      <BrowserRouter>
+        <Suspense fallback={<LazyLoader />}>
+          <Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route element={ <HomeLayout /> }>
+                <Route path="/" element={<Navigate to="/notes" replace />} />
+                <Route path="" element={<Navigate to="/notes" replace />} />
+                <Route path="/notes" element={<Notes />} />
+                <Route path="/notes/:id" element={<Note />} />
+                <Route path="/sharednotes" element={<SharedNotes />} />
+                <Route path="/sharedwithme" element={<SharedNotesWithMe />} />
+                
+              </Route>
+            </Route>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
     </LoadingProvider>
   )
 }
