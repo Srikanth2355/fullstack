@@ -49,13 +49,14 @@ app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
     noteRoutes(req,res,next)
 })
 
+// ********************uncomment the below routes only for production Branch *********************************
 // Serve the static files from the React build folder
-// app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
 // // Catch-all route to serve index.html for React Router
-// app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
-//   });
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Frontend/dist", "index.html"));
+  });
 
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`Server running on port ${port}`))   
