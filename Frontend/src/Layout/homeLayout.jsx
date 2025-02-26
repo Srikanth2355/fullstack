@@ -27,7 +27,7 @@ function HomeLayout() {
         navigate('/login');
         notification.success({
           message: 'Success',
-          description: "Logout Successfull",
+          description: "Logout Successful",
           duration: 3
         });
       }
