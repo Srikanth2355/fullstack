@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const {signJWT,verifyJWT} = require("../utils/jwt");
 const {checkLoggedIn} = require("../Middlewares/checkLoggedIn");
 const {sendEmail} = require("../utils/EmailManager");
-const {generateOTP,verifyOTP} = require("../utils/OTPManager");
+const {generateOTP,verifyOTP,deleteOTP} = require("../utils/OTPManager");
 
 userrouter.post("/register",registerMiddleware, async (req, res) => {
     try {
