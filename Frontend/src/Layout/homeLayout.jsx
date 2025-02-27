@@ -1,6 +1,6 @@
 import React, { Children, useEffect, useState } from 'react';
 import { Layout, Menu, notification, theme, Drawer } from 'antd';
-import { DeleteOutlined,MenuUnfoldOutlined,MenuFoldOutlined, LogoutOutlined, BookOutlined, ShareAltOutlined, InboxOutlined } from '@ant-design/icons';
+import { DeleteOutlined,MenuUnfoldOutlined, LogoutOutlined, BookOutlined, ShareAltOutlined, InboxOutlined, UserAddOutlined, PullRequestOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet,useLocation } from 'react-router-dom';
 import { useLoading } from '../utils/loader.jsx';
 import axiosInstance from '../utils/axios';
@@ -54,6 +54,8 @@ function HomeLayout() {
       navigate('/sharednotes');
     }else if(e.key === '3'){
       navigate('/sharedwithme');
+    }else if(e.key === '4'){
+      navigate('/friends');
     }
     setOpendrawer(false);
   };
@@ -65,6 +67,8 @@ function HomeLayout() {
       setSelectedKey('2');
     }else if(location.pathname === '/sharedwithme'){
       setSelectedKey('3');
+    }else if(location.pathname === '/friends'){
+      setSelectedKey('4');
     }
 
   },[])
@@ -84,12 +88,12 @@ function HomeLayout() {
       key: '3',
       label: "Shared with me",
       icon: <InboxOutlined className='text-sm md:text-md lg:text-xl' />
+    },
+    {
+      key: '4',
+      label: "Friends",
+      icon: <UserAddOutlined   className='text-sm md:text-md lg:text-xl' />
     }
-    // {
-    //   key: '4',
-    //   label: "Deleted Notes",
-    //   icon: <DeleteOutlined  className='text-sm md:text-md lg:text-xl' />
-    // }
   ]
   return (
     <>
@@ -115,8 +119,14 @@ function HomeLayout() {
             theme="dark"
             mode="inline"
             items={[
+              {
+                key: '5',
+                label: "thetakenotes status",
+                icon: <PullRequestOutlined  className='text-sm md:text-md lg:text-xl' />,
+                onClick: () => window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank")
+              },
              {
-              key: '5',
+              key: '6',
               label: "Logout",
               icon: <LogoutOutlined className='text-sm md:text-md lg:text-xl' />,
               onClick: handleLogout
