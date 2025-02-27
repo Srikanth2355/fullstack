@@ -99,7 +99,7 @@ function HomeLayout() {
     <>
     <Layout className='min-h-screen'>
       <Drawer
-        title="takenotes"
+        title="thetakenotes"
         placement="left"
         closable={true}
         onClose={() => setOpendrawer(false)}
@@ -118,6 +118,14 @@ function HomeLayout() {
             className='text-sm md:text-md'
             theme="dark"
             mode="inline"
+            selectedKeys={[]}
+            onClick={(e) => {
+              if (e.key === "5") {
+                window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank");
+              } else if (e.key === "6") {
+                handleLogout();
+              }
+            }}
             items={[
               {
                 key: '5',
@@ -162,9 +170,23 @@ function HomeLayout() {
             className='text-sm md:text-md'
             theme="dark"
             mode="inline"
+            selectedKeys={[]}
+            onClick={(e) => {
+              if (e.key === "5") {
+                window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank");
+              } else if (e.key === "6") {
+                handleLogout();
+              }
+            }}
             items={[
+              {
+                key: '5',
+                label: "thetakenotes status",
+                icon: <PullRequestOutlined  className='text-sm md:text-md lg:text-xl' />,
+                onClick: () => window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank")
+              },
              {
-              key: '5',
+              key: '6',
               label: "Logout",
               icon: <LogoutOutlined className='text-sm md:text-md lg:text-xl' />,
               onClick: handleLogout
@@ -176,7 +198,7 @@ function HomeLayout() {
 
           <div className='md:hidden w-full p-2 px-4 flex' style={{background: '#001529',position: 'fixed', zIndex: 1000}}>
             <MenuUnfoldOutlined style={{ fontSize: '20px', color: 'white' }}  onClick={(value) => setOpendrawer(!opendrawer)}/>
-            <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">takenotes</p> 
+            <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">thetakenotes</p> 
 
           </div>
           <div className='mt-12 md:mt-0 h-[90vh] md:h-[100vh]' style={{

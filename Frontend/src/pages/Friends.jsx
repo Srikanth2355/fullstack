@@ -1,34 +1,67 @@
 import React,{useState,useEffect} from 'react'
 import { Table, Button, Input, Space, notification,Empty, Tabs } from "antd";
 import {SearchOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupDeleteOutlined,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
-
+import axiosInstance from '../utils/axios';
+import {useLoading} from '../utils/loader';
 const Friends = () => {
     const [pendingRequests, setPendingRequests] = useState([]);
-    // const [friends, setFriends] = useState([]);
+    const {showLoading, hideLoading} = useLoading();
+    const [friends, setFriends] = useState([]);
     const [email, setEmail] = useState("");
     const [searchEmail, setSearchEmail] = useState("");
-    const [friendRequests, setFriendRequests] = useState([
-        { key: 1, name: "John Doe", email: "john@example.com" },
-        { key: 2, name: "Jane Smith", email: "jane@example.com" },
-        { key: 3, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 4, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 5, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 6, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 7, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 8, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 9, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 10, name: "Bob Johnson", email: "bob@example.com" },
-      ]);
-    
-      const [friends, setFriends] = useState([
-        { key: 1, name: "Alice Brown", email: "alice@example.com" },
-        { key: 2, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 3, name: "Bob Johnson", email: "bob@example.com" },
-        { key: 4, name: "Bob Johnson", email: "bob@example.com" },
-        // { key: 5, name: "Bob Johnson", email: "bob@example.com" },
-        // { key: 6, name: "Bob Johnson", email: "bob@example.com" },
+    const [frndRequests, setFrndRequests] = useState([]);
 
-      ]);
+    const sendFriendRequest = () => {
+      showLoading();
+      if (email.trim() === "") {
+        notification.error({
+          message: "Error",
+          description: "Please enter a valid email address.",
+        });
+        hideLoading();
+        return;
+      }
+      // verify if its a valid email 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        notification.error({
+          message: "Error",
+          description: "Please enter a valid email address.",
+        });
+        hideLoading();
+        return;
+      }
+
+      const existing_frnd = friends.find((friend) => friend.email === email);
+      if (existing_frnd) {
+        notification.error({
+          message: "Error",
+          description: "You are already friends with " + existing_frnd.email,
+        });
+        hideLoading();
+        return;
+      }
+      axiosInstance.post("/friends/addfriend", { email })
+        .then((response) => {
+        if (response.status === 200) {
+          notification.success({
+            message: "Success",
+            description: response.data.message,
+          });
+          setEmail("");
+        } 
+      })
+        .catch((error) => {
+          console.error("Error:", error);
+          notification.error({
+            message: "Error",
+            description: error.response.data.message,
+          });
+        })
+        .finally(() => {
+          hideLoading();
+        });
+    }
 
     const friendColumns = [
         {
@@ -56,18 +89,18 @@ const Friends = () => {
     const friendRequestColumns = [
         {
             title: "Name & Email",
-            dataIndex: "name",
-            key: "name",
+            dataIndex: "sendername",
+            key: "sendername",
             responsive: ["xs"], // Show only on small screens
             render: (text, record) => (
               <div>
-                <p className="font-semibold">{record.name}</p>
-                <p className="text-gray-500">{record.email}</p>
+                <p className="font-semibold">{record.sendername}</p>
+                <p className="text-gray-500">{record.senderemail}</p>
               </div>
             ),
           },
-        { title: "Sender Name", dataIndex: "name", key: "name",responsive: ["sm"] },
-        { title: "Sender Email", dataIndex: "email", key: "email",responsive: ["sm"] },
+        { title: "Name", dataIndex: "sendername", key: "sendername",responsive: ["sm"] },
+        { title: "Email", dataIndex: "senderemail", key: "senderemail",responsive: ["sm"] },
         {
           title: "Action",
           key: "action",
@@ -82,37 +115,57 @@ const Friends = () => {
         },
     ];
 
+    const getfrndrequests = () => {
+      showLoading();
+      axiosInstance.get("/friends/getallfriendrequests")
+        .then((response) => {
+          if (response.status === 200) {
+            setFrndRequests(response.data.frndrequests);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          hideLoading();
+        });
+    }
+
+    useEffect(() => {
+      getfrndrequests();
+      // getfriends();
+    },[])
+
 
     return (
         <>
             <Tabs
-            defaultActiveKey="1"
-            centered
-            items={[
+              defaultActiveKey="1"
+              centered
+              items={[
                 {
                     key: "1",
                     label: "Friends",
                     children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
                         <div  className=" h-[75vh] md:h-[80vh] bg-white py-3 md:py-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
                         <div className="flex items-center gap-2 mb-4 px-3">
-                                <Input placeholder="Enter friend email" className="flex-1" />
-                                <Button type="primary" icon={<UserAddOutlined />}>Send Request</Button>
+                                <Input placeholder="Enter friend email" className="flex-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <Button type="primary" icon={<UserAddOutlined />} disabled={!email} onClick={sendFriendRequest}>Add Friend</Button>
                             </div>
-                            {
-                            friends.length ==0 ?(
-                                <div className='flex justify-center items-center h-full'>
-                                    <Empty description="No friends yet. Try adding some!" />
-                                </div>
-                            ):(
-
                                 <Table
                                     columns={friendColumns}
                                     dataSource={friends}
                                     pagination={false}
+                                    locale={{
+                                      emptyText: (
+                                        <Empty 
+                                          image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                                          description="No Friends yet! Try adding some."
+                                        />
+                                      ),
+                                    }}
                                     className='overflow-y-auto h-full custom-scrollbar w-full'
                                 />
-                            )
-                            }
                         </div>
                     </div>) 
                 },
@@ -121,21 +174,20 @@ const Friends = () => {
                     label: "Pending Requests",
                     children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
                         <div className="h-[75vh] md:h-[80vh] bg-white pb-3 md:pb-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
-                            
-                            {
-                            friendRequests.length ==0 ?(
-                                <div className='flex justify-center items-center h-full'>
-                                    <Empty description="No friend requests" />
-                                </div>
-                        ):(
                             <Table
                                 columns={friendRequestColumns}
-                                dataSource={friendRequests}
+                                dataSource={frndRequests}
                                 pagination={false}
+                                locale={{
+                                  emptyText: (
+                                    <Empty 
+                                      image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                                      description="No Friend Requests!"
+                                    />
+                                  ),
+                                }}
                                 className='overflow-y-auto h-full custom-scrollbar w-full'
                             />
-                        )
-                    }
                         </div>
                     </div>)
                 }

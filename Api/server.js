@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const userRoutes = require('./Routes/userRoutes')
 const noteRoutes = require('./Routes/noteRoutes')
+const friendsRoutes = require('./Routes/friendRoutes')
 const app = express()
 const path = require("path");
 
@@ -47,6 +48,10 @@ app.use('/api/user', (req,res,next)=>{
 
 app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
     noteRoutes(req,res,next)
+})
+
+app.use('/api/friends',checkLoggedIn, (req,res,next)=>{
+    friendsRoutes(req,res,next)
 })
 
 // Serve the static files from the React build folder

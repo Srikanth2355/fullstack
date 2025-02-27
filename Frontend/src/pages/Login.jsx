@@ -47,8 +47,11 @@ const LoginForm = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white mx-2 p-6 rounded-lg shadow-md w-full max-w-md">
+      <div className="min-h-screen px-2 flex flex-col items-center justify-center bg-gray-100">
+      <h1 className="text-4xl font-extrabold text-gray-700 mb-6 opacity-90">
+        thetakenotes
+      </h1>
+        <div className="bg-white mx-2 p-6 rounded-xl shadow-md w-full max-w-md">
           <h1 className="text-2xl font-bold text-center mb-4 ">Login</h1>
           <Form
               form = {form}
