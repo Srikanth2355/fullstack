@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 const friendRequestSchema = new mongoose.Schema({
     senderemail: {
         type: String,
+        required: true
     },
     receiveremail: {
         type: String,
+        required: true
     },
     sendername: {
         type: String,
