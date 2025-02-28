@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { Table, Button, Input, Space, notification,Empty, Tabs } from "antd";
+import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip } from "antd";
 import {SearchOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupDeleteOutlined,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
 import {useLoading} from '../utils/loader';
@@ -10,6 +10,87 @@ const Friends = () => {
     const [email, setEmail] = useState("");
     const [searchEmail, setSearchEmail] = useState("");
     const [frndRequests, setFrndRequests] = useState([]);
+    const friendColumns = [
+      {
+          title: "Name",
+          dataIndex: "name",
+          key: "name",
+          responsive: ["xs"], // Show only on small screens
+          render: (text, record) => (
+            <div>
+              <p className="font-semibold">{record.name}</p>
+              <p className="text-gray-500">{record.email}</p>
+            </div>
+          ),
+        },
+      { title: "Friend Name", dataIndex: "name", key: "name",responsive: ["sm"] },
+      { title: "Friend Email", dataIndex: "email", key: "email",responsive: ["sm"] },
+      {
+        title: "Action",
+        key: "action",
+        render: (_, record) => (
+          <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
+        ),
+      },
+    ];
+    const friendRequestColumns = [
+        {
+            title: "Name & Email",
+            dataIndex: "sendername",
+            key: "sendername",
+            responsive: ["xs"], // Show only on small screens
+            render: (text, record) => (
+              <div className='flex items-center'>
+                <div 
+                  className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
+                  style={{ backgroundColor: getRandomPastelColor() }}
+                >
+                  {text.charAt(0).toUpperCase()}
+                </div>
+                <div className=''>
+                  <p className="font-semibold">{record.sendername}</p>
+                  <div className='w-full overflow-hidden max-w-[150px]'>
+                      <Tooltip title={record.senderemail} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
+                        <span className="text-gray-500 inline-block text-sm overflow-hidden whitespace-nowrap text-ellipsis !max-w-[150px]  cursor-pointer">
+                          {record.senderemail}
+                        </span>
+                      </Tooltip>
+                  </div>
+                </div>
+              </div>
+            ),
+          },
+        { title: "Name", dataIndex: "sendername", key: "sendername",responsive: ["sm"],
+          render: (text, record) => (
+            <div className="flex items-center space-x-2">
+              <div 
+                className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
+                style={{ backgroundColor: getRandomPastelColor() }}
+              >
+                {text.charAt(0).toUpperCase()}
+              </div>
+              <span className="font-medium">{text}</span>
+            </div>
+          ),
+         },
+        { title: "Email", dataIndex: "senderemail", key: "senderemail",responsive: ["sm"] },
+        {
+          title: "Action",
+          key: "action",
+          render: (_, record) => (
+            <div className="flex gap-2">
+                <Button type="text" icon={<CheckCircleFilled className="text-green-500 text-xl" style={{fontSize:"20px"}} />} />
+                <Button type="text" icon={<CloseCircleOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} />} />
+              {/* <Button type="primary" icon={<CheckOutlined />} onClick={() => acceptRequest(record.key)}>Accept</Button>
+              <Button danger icon={<CloseOutlined />} onClick={() => rejectRequest(record.key)}>Reject</Button> */}
+            </div>
+          ),
+        },
+    ];
+    const getRandomPastelColor = () => {
+      const hue = Math.floor(Math.random() * 360); // Random hue value
+      return `hsl(${hue}, 70%, 85%)`; // HSL with high lightness for pastel effect
+    };
 
     const sendFriendRequest = () => {
       showLoading();
@@ -62,59 +143,6 @@ const Friends = () => {
           hideLoading();
         });
     }
-
-    const friendColumns = [
-        {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
-            responsive: ["xs"], // Show only on small screens
-            render: (text, record) => (
-              <div>
-                <p className="font-semibold">{record.name}</p>
-                <p className="text-gray-500">{record.email}</p>
-              </div>
-            ),
-          },
-        { title: "Friend Name", dataIndex: "name", key: "name",responsive: ["sm"] },
-        { title: "Friend Email", dataIndex: "email", key: "email",responsive: ["sm"] },
-        {
-          title: "Action",
-          key: "action",
-          render: (_, record) => (
-            <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
-          ),
-        },
-    ];
-    const friendRequestColumns = [
-        {
-            title: "Name & Email",
-            dataIndex: "sendername",
-            key: "sendername",
-            responsive: ["xs"], // Show only on small screens
-            render: (text, record) => (
-              <div>
-                <p className="font-semibold">{record.sendername}</p>
-                <p className="text-gray-500">{record.senderemail}</p>
-              </div>
-            ),
-          },
-        { title: "Name", dataIndex: "sendername", key: "sendername",responsive: ["sm"] },
-        { title: "Email", dataIndex: "senderemail", key: "senderemail",responsive: ["sm"] },
-        {
-          title: "Action",
-          key: "action",
-          render: (_, record) => (
-            <div className="flex gap-2">
-                <Button type="text" icon={<CheckCircleFilled className="text-green-500 text-xl" style={{fontSize:"20px"}} />} />
-                <Button type="text" icon={<CloseCircleOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} />} />
-              {/* <Button type="primary" icon={<CheckOutlined />} onClick={() => acceptRequest(record.key)}>Accept</Button>
-              <Button danger icon={<CloseOutlined />} onClick={() => rejectRequest(record.key)}>Reject</Button> */}
-            </div>
-          ),
-        },
-    ];
-
     const getfrndrequests = () => {
       showLoading();
       axiosInstance.get("/friends/getallfriendrequests")
