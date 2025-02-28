@@ -170,7 +170,9 @@ function Notes() {
                     return(
                         <Card key={index} 
                         actions={[
-                            <ShareAltOutlined key="share" style={{fontSize:"19px"}} onClick={() => message.success('Shared successfully!')} />,
+                            <Tooltip title="Comming Soon">
+                                <ShareAltOutlined key="share" style={{fontSize:"19px"}} />
+                            </Tooltip>
                           ]}
                             className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
                             <Tooltip title={note.title} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
