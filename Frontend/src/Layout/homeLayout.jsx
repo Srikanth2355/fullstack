@@ -201,7 +201,7 @@ function HomeLayout() {
             <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">thetakenotes</p> 
 
           </div>
-          <div className='mt-12 md:mt-0 h-[90vh] md:h-[100vh]' style={{
+          <div className='mt-12 md:mt-0 h-[90vh] md:h-[100vh] custom-scrollbar' style={{
             overflowY: "auto",
             padding: "8px",
           }}>

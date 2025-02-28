@@ -1,10 +1,9 @@
 import React,{useState,useEffect,useCallback} from 'react'
 import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip } from "antd";
-import {SearchOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupDeleteOutlined,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
+import { UserAddOutlined, UserDeleteOutlined, ReloadOutlined ,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
 import {useLoading} from '../utils/loader';
 const Friends = () => {
-    const [pendingRequests, setPendingRequests] = useState([]);
     const {showLoading, hideLoading} = useLoading();
     const [email, setEmail] = useState("");
     const [friends, setFriends] = useState([]);
@@ -56,8 +55,8 @@ const Friends = () => {
         title: "Action",
         key: "action",
         render: (_, record) => (
-          <Tooltip title="Remove">
-            <Button type="text" Danger icon={<UserDeleteOutlined className="text-green-500 text-xl" style={{fontSize:"20px"}} />} /> 
+          <Tooltip title="Unfriend">
+            <Button type="text" icon={<UserDeleteOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} onClick={() => removeFriend(record)} />} /> 
           </Tooltip>
           // <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
         ),
@@ -216,7 +215,7 @@ const Friends = () => {
         .finally(() => {
           hideLoading();
         });
-    },[getfrndrequests])
+    })
 
     const rejectRequest = useCallback((id) => {
       showLoading();
@@ -240,7 +239,7 @@ const Friends = () => {
         .finally(() => {
           hideLoading();
         });
-    },[getfrndrequests])
+    })
 
     const getfriends = () => {
       showLoading();
@@ -257,6 +256,31 @@ const Friends = () => {
           hideLoading();
         });
     }
+
+    const removeFriend = useCallback((record) => {
+      showLoading();
+      axiosInstance.post("/friends/removefriend", { id: record._id, email: record.email })
+        .then((response) => {
+          if (response.status === 200) {
+            notification.success({
+              message: "Success",
+              description: response.data.message,
+            });
+            getfrndrequests();
+            getfriends();
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          notification.error({
+            message: "Error",
+            description: error.response.data.message,
+          });
+        })
+        .finally(() => {
+          hideLoading();
+        })
+    })
 
     useEffect(() => {
       getfrndrequests();
@@ -282,22 +306,26 @@ const Friends = () => {
                 {
                     key: "1",
                     label: "Friends",
-                    children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
-                        <div  className=" h-[75vh] md:h-[80vh] bg-white py-3 md:py-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
-                          <div className="flex items-center gap-2 mb-2 px-3">
-                              <Input placeholder="Enter friend email" className="flex-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                              <Button type="primary" icon={<UserAddOutlined />} disabled={!email} onClick={sendFriendRequest}>Add Friend</Button>
-                          </div>
-                          <div className='flex items-center justify-end my-2 px-3'>
-                          <Input
-                            placeholder="Search Friends by name or email" 
-                            value={searchfriend}
-                            allowClear 
-                            onChange={(e) => setSearchfriend(e.target.value)}
-                            className="w-full md:w-1/2 lg:w-1/3"
-                          />
+                    children: (<div className="flex flex-col gap-2 p-1  md:p-4 h-full">
+                        <div className="flex items-center">
+                            <Input placeholder="Enter friend email" className="flex-1 mr-2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <Button type="primary" icon={<UserAddOutlined />} disabled={!email} onClick={sendFriendRequest}>Add Friend</Button>
+                        </div>
+                        <div className='flex items-center justify-between my-2'>
+                        <Input
+                          placeholder="Search Friends by name or email" 
+                          value={searchfriend}
+                          allowClear 
+                          onChange={(e) => setSearchfriend(e.target.value)}
+                          className="w-full md:w-1/2 lg:w-1/3 mr-2"
+                        />
+                        
+                        <Button color="primary" variant='outlined' shape="round" icon={<ReloadOutlined /> } onClick={() => {getfriends(); getfrndrequests()}} >
+                          Refresh data
+                          </Button>
 
-                          </div>
+                        </div>
+                        <div  className=" h-[65vh] md:h-[70vh] bg-white  rounded-2xl shadow-md flex flex-col overflow-hidden">
                                 <Table
                                     columns={friendColumns}
                                     dataSource={filteredfriends.map((request) => ({
@@ -322,7 +350,13 @@ const Friends = () => {
                     key: "2",
                     label: "Friend Requests",
                     children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
-                        <div className="h-[75vh] md:h-[80vh] bg-white pb-3 md:pb-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
+                        <div className='flex items-center justify-end'>
+
+                        <Button color="primary" variant='outlined' shape="round" icon={<ReloadOutlined /> } onClick={() => {getfriends(); getfrndrequests()}} >
+                            Refresh data
+                            </Button>
+                        </div>
+                        <div className="h-[70vh] md:h-[75vh] bg-white pb-3 md:pb-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
                             <Table
                                 columns={friendRequestColumns}
                                 dataSource={frndRequests.map((request) => ({

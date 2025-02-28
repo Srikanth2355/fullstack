@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+// status flow
+// pending -> accepted/rejected -> unfriend
 const friendRequestSchema = new mongoose.Schema({
     senderemail: {
         type: String,
@@ -18,7 +20,7 @@ const friendRequestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "accepted", "rejected"],
+        enum: ["pending", "accepted", "rejected", "unfriend"],
         default: "pending",
     }
 },
