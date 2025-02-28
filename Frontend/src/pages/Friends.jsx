@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useCallback} from 'react'
 import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip } from "antd";
 import {SearchOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupDeleteOutlined,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
@@ -6,9 +6,10 @@ import {useLoading} from '../utils/loader';
 const Friends = () => {
     const [pendingRequests, setPendingRequests] = useState([]);
     const {showLoading, hideLoading} = useLoading();
-    const [friends, setFriends] = useState([]);
     const [email, setEmail] = useState("");
-    const [searchEmail, setSearchEmail] = useState("");
+    const [friends, setFriends] = useState([]);
+    const [searchfriend, setSearchfriend] = useState("");
+    const [filteredfriends, setFilteredfriends] = useState([]);
     const [frndRequests, setFrndRequests] = useState([]);
     const friendColumns = [
       {
@@ -17,25 +18,54 @@ const Friends = () => {
           key: "name",
           responsive: ["xs"], // Show only on small screens
           render: (text, record) => (
-            <div>
-              <p className="font-semibold">{record.name}</p>
-              <p className="text-gray-500">{record.email}</p>
-            </div>
+            <div className='flex items-center'>
+                <div 
+                  className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
+                  style={{ backgroundColor: getRandomPastelColor() }}
+                >
+                  {text.charAt(0).toUpperCase()}
+                </div>
+                <div className=''>
+                  <p className="font-semibold">{record.name}</p>
+                  <div className='w-full overflow-hidden max-w-[150px]'>
+                      <Tooltip title={record.email} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
+                        <span className="text-gray-500 inline-block text-sm overflow-hidden whitespace-nowrap text-ellipsis !max-w-[150px]  cursor-pointer">
+                          {record.email}
+                        </span>
+                      </Tooltip>
+                  </div>
+                </div>
+              </div>
           ),
         },
-      { title: "Friend Name", dataIndex: "name", key: "name",responsive: ["sm"] },
-      { title: "Friend Email", dataIndex: "email", key: "email",responsive: ["sm"] },
+      { title: "Name", dataIndex: "name", key: "name",responsive: ["sm"],
+        render: (text, record) => (
+          <div className="flex items-center space-x-2">
+            <div 
+              className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
+              style={{ backgroundColor: getRandomPastelColor() }}
+            >
+              {text.charAt(0).toUpperCase()}
+            </div>
+            <span className="font-medium">{text}</span>
+          </div>
+        ),
+       },
+      { title: "Email", dataIndex: "email", key: "email",responsive: ["sm"] },
       {
         title: "Action",
         key: "action",
         render: (_, record) => (
-          <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
+          <Tooltip title="Remove">
+            <Button type="text" Danger icon={<UserDeleteOutlined className="text-green-500 text-xl" style={{fontSize:"20px"}} />} /> 
+          </Tooltip>
+          // <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
         ),
       },
     ];
     const friendRequestColumns = [
         {
-            title: "Name & Email",
+            title: "Name",
             dataIndex: "sendername",
             key: "sendername",
             responsive: ["xs"], // Show only on small screens
@@ -79,8 +109,12 @@ const Friends = () => {
           key: "action",
           render: (_, record) => (
             <div className="flex gap-2">
-                <Button type="text" icon={<CheckCircleFilled className="text-green-500 text-xl" style={{fontSize:"20px"}} />} />
-                <Button type="text" icon={<CloseCircleOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} />} />
+              <Tooltip title="Accept">
+                <Button type="text" icon={<CheckCircleFilled className="text-green-500 text-xl" style={{fontSize:"20px"}} onClick={() => acceptRequest(record._id)} />} /> 
+              </Tooltip>
+              <Tooltip title="Reject">
+                <Button type="text" icon={<CloseCircleOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} onClick={() => rejectRequest(record._id)} />} />
+              </Tooltip>
               {/* <Button type="primary" icon={<CheckOutlined />} onClick={() => acceptRequest(record.key)}>Accept</Button>
               <Button danger icon={<CloseOutlined />} onClick={() => rejectRequest(record.key)}>Reject</Button> */}
             </div>
@@ -159,10 +193,84 @@ const Friends = () => {
         });
     }
 
+    const acceptRequest = useCallback((id) => {
+      showLoading();
+      axiosInstance.post("/friends/acceptfriendrequest", { id })
+        .then((response) => {
+          if (response.status === 200) {
+            notification.success({
+              message: "Success",
+              description: response.data.message,
+            });
+            getfrndrequests();
+            getfriends();
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          notification.error({
+            message: "Error",
+            description: error.response.data.message,
+          });
+        })
+        .finally(() => {
+          hideLoading();
+        });
+    },[getfrndrequests])
+
+    const rejectRequest = useCallback((id) => {
+      showLoading();
+      axiosInstance.post("/friends/rejectfriendrequest", { id })
+        .then((response) => {
+          if (response.status === 200) {
+            notification.success({
+              message: "Success",
+              description: response.data.message,
+            });
+            getfrndrequests();
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          notification.error({
+            message: "Error",
+            description: error.response.data.message,
+          });
+        })
+        .finally(() => {
+          hideLoading();
+        });
+    },[getfrndrequests])
+
+    const getfriends = () => {
+      showLoading();
+      axiosInstance.get("/friends/getallfriends")
+        .then((response) => {
+          if (response.status === 200) {
+            setFriends(response.data.friends);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          hideLoading();
+        });
+    }
+
     useEffect(() => {
       getfrndrequests();
-      // getfriends();
+      getfriends();
     },[])
+
+    useEffect(() => {
+      // Filter friends based on searc
+      const filtered = friends.filter((friend) =>
+        friend.name.toLowerCase().includes(searchfriend.toLowerCase()) ||
+        friend.email.toLowerCase().includes(searchfriend.toLowerCase())
+      );
+      setFilteredfriends(filtered);
+    }, [searchfriend, friends]);
 
 
     return (
@@ -176,13 +284,26 @@ const Friends = () => {
                     label: "Friends",
                     children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
                         <div  className=" h-[75vh] md:h-[80vh] bg-white py-3 md:py-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
-                        <div className="flex items-center gap-2 mb-4 px-3">
-                                <Input placeholder="Enter friend email" className="flex-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                <Button type="primary" icon={<UserAddOutlined />} disabled={!email} onClick={sendFriendRequest}>Add Friend</Button>
-                            </div>
+                          <div className="flex items-center gap-2 mb-2 px-3">
+                              <Input placeholder="Enter friend email" className="flex-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                              <Button type="primary" icon={<UserAddOutlined />} disabled={!email} onClick={sendFriendRequest}>Add Friend</Button>
+                          </div>
+                          <div className='flex items-center justify-end my-2 px-3'>
+                          <Input
+                            placeholder="Search Friends by name or email" 
+                            value={searchfriend}
+                            allowClear 
+                            onChange={(e) => setSearchfriend(e.target.value)}
+                            className="w-full md:w-1/2 lg:w-1/3"
+                          />
+
+                          </div>
                                 <Table
                                     columns={friendColumns}
-                                    dataSource={friends}
+                                    dataSource={filteredfriends.map((request) => ({
+                                      ...request,
+                                      key: request._id
+                                    }))}
                                     pagination={false}
                                     locale={{
                                       emptyText: (
@@ -199,12 +320,15 @@ const Friends = () => {
                 },
                 {
                     key: "2",
-                    label: "Pending Requests",
+                    label: "Friend Requests",
                     children: (<div className="flex flex-col gap-4 p-1  md:p-4 h-full">
                         <div className="h-[75vh] md:h-[80vh] bg-white pb-3 md:pb-4 rounded-2xl shadow-md flex flex-col overflow-hidden">
                             <Table
                                 columns={friendRequestColumns}
-                                dataSource={frndRequests}
+                                dataSource={frndRequests.map((request) => ({
+                                  ...request,
+                                  key: request._id
+                                }))}
                                 pagination={false}
                                 locale={{
                                   emptyText: (
