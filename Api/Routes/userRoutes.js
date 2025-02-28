@@ -14,12 +14,12 @@ userrouter.post("/register",registerMiddleware, async (req, res) => {
         const user_data = req.body;
         const verifyotp = await verifyOTP(user_data.email, user_data.otp);
         if (!verifyotp) {
-            return res.status(400).json({ error: "OTP verification failed! Please try again" });
+            return res.status(400).json({ message: "OTP verification failed! Please try again" });
         }
         const otpdeleted = await deleteOTP(user_data.email);
         const existing_user = await User.findOne({ email: user_data.email });
         if (existing_user) {
-            return res.status(400).json({ error: "User already exists" });
+            return res.status(400).json({ message: "User already exists" });
         }
         const user = new User();
         user.name = user_data.name;
@@ -28,7 +28,7 @@ userrouter.post("/register",registerMiddleware, async (req, res) => {
         await user.save();
         res.status(200).json({ message: "User registered successfully. Please login" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -37,11 +37,11 @@ userrouter.post("/login",loginMiddleware, async (req, res) => {
         const user_data = req.body;
         const getuser = await User.findOne({ email: user_data.email });
         if (!getuser) {
-            return res.status(400).json({ error: "User not found" });
+            return res.status(400).json({ message: "Please enter valid credentials" });
         }
         const password_match = await bcrypt.compare(user_data.password,getuser.password);
         if (!password_match) {
-            return res.status(400).json({ error: "Invalid password" });
+            return res.status(400).json({ message: "Please enter valid credentials" });
         }
         const token = signJWT({id:getuser._id,email:getuser.email,role:getuser.role,name:getuser.name});
         res.cookie('jwtToken', token, {
@@ -54,7 +54,7 @@ userrouter.post("/login",loginMiddleware, async (req, res) => {
         res.status(200).json({ message: "User logged in successfully", userdata :userobj });
 
     }catch(error){
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -67,7 +67,7 @@ userrouter.get("/checklogin",checkLoggedIn,async (req, res) => {
     try{
         res.status(200).json({ message: "User is logged in", userdata: req.user });
     }catch(error){
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -83,16 +83,16 @@ userrouter.post("/generateotp", async (req, res) => {
         }
         const otp = generateOTP(userdata.email,res);
         if (otp?.error) {
-            return res.status(400).json({ error: otp.error });
+            return res.status(400).json({ message: otp.error });
         }
         const sendemail = await sendEmail(userdata.email,otp,userdata.name);
         if(sendemail){
             res.status(200).json({ message: "OTP sent successfully" });
         }else{
-            res.status(500).json({ error: "Failed to send OTP" });
+            res.status(500).json({ message: "Failed to send OTP" });
         }
     } catch (error) {   
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -103,20 +103,20 @@ userrouter.post("/forgot-password", async (req, res) => {
         const existing_user = await User.findOne({ email:
         userdata.email });
         if (!existing_user) {
-            return res.status(400).json({ error: "User not found" });
+            return res.status(400).json({ message: "User not found" });
         }
         const otp = generateOTP(userdata.email);
         if (otp?.error) {
-            return res.status(400).json({ error: otp.error });
+            return res.status(400).json({ message: otp.error });
         }
         const sendemail = await sendEmail(userdata.email,otp,'',"OTP for resetting password");
         if(sendemail){
             res.status(200).json({ message: "OTP sent successfully" });
         }else{
-            res.status(500).json({ error: "Failed to send OTP" });
+            res.status(500).json({ message: "Failed to send OTP" });
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }    
 });
 
@@ -126,17 +126,17 @@ userrouter.post("/reset-password", async (req, res) => {
         const user_data = req.body;
         const verifyotp = await verifyOTP(user_data.email, user_data.otp);
         if (!verifyotp) {
-            return res.status(400).json({ error: "OTP verification failed! Please try again" });
+            return res.status(400).json({ MessagePort: "OTP verification failed! Please try again" });
         }
         const user = await User.findOne({ email: user_data.email });
         if (!user) {
-            return res.status(400).json({ error: "User not found" });
+            return res.status(400).json({ message: "User not found" });
         }
         user.password = await bcrypt.hash(user_data.password, 10); // Hash user_data.password;
         await user.save();
         res.status(200).json({ message: "Password has been reset successfully. Please login" });
     }catch(error){
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 

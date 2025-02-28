@@ -31,7 +31,7 @@ const LoginForm = () => {
       console.error('Error:', error);
       notification.error({
         message: 'Error',
-        description: error.response.data.error, // Use the error message from the response
+        description: error.response.data.message, // Use the error message from the response
         duration: 5
       });
     })

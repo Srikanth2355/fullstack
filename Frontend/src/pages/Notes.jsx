@@ -176,9 +176,6 @@ function Notes() {
                           ]}
                             className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
                             <Tooltip title={note.title} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
-                                {/* <span className="text-gray-500 inline-block text-sm overflow-hidden whitespace-nowrap text-ellipsis !max-w-[150px]  cursor-pointer">
-                                {record.email}
-                                </span> */}
                                 <p className='text-xl font-medium truncate px-2'>{note.title}</p>
                             </Tooltip>    
                             <div className="h-[210px] overflow-hidden  px-2 pb-2 cursor-pointer" onClick={()=>navigate(`/notes/${note._id}`)}>

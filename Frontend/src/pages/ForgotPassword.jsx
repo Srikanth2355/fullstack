@@ -24,7 +24,7 @@ const ForgotPassword = () => {
         setStep(2);
       })
       .catch((error) => {
-        notification.error({ message: "Error", description: error.response.data.error });
+        notification.error({ message: "Error", description: error.response.data.message });
       })
       .finally(() => hideLoading());
   };
@@ -38,7 +38,7 @@ const ForgotPassword = () => {
         navigate('/login');
       })
       .catch((error) => {
-        notification.error({ message: "Error", description: error.response.data.error });
+        notification.error({ message: "Error", description: error.response.data.message });
       })
       .finally(() => hideLoading());
   };

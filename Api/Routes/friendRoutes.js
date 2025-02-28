@@ -110,6 +110,38 @@ friendrouter.get("/getallfriends", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+// Unfriend
+friendrouter.post("/removefriend", async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        const user = req.user;
+        const frnd_details = req.body;
+        // check whether the friend id exists in user.friends array
+        const user_is_ardy_frnd = await User.findOne({ _id: user.id });
+        if(!user_is_ardy_frnd.friends.includes(frnd_details.id)){
+            return res.status(400).json({ message: "You are not friends with " + frnd_details.email });
+        }
+        // find the document where friend requested is accepted and update the same
+        const found_frnd_request = await Friends.findOne({$or:[{senderemail:user.email,receiveremail:frnd_details.email,status:"accepted"},{senderemail:frnd_details.email,receiveremail:user.email,status:"accepted"}]});
+        if(!found_frnd_request){
+            return res.status(400).json({ message: "You are not friends with " + frnd_details.email });
+        }
+        found_frnd_request.status = "unfriend";
+        await found_frnd_request.save({session});
+        await User.findByIdAndUpdate(user.id, { $pull: { friends: frnd_details.id } }, { new: true,session });
+        await User.findByIdAndUpdate(frnd_details.id, { $pull: { friends: user.id } }, { new: true,session });
+        await session.commitTransaction();
+        session.endSession();
+        res.status(200).json({ message: "Friend removed successfully" });
+    }
+    catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).json({ message: error.message });
+    }
+});
         
 
 module.exports = friendrouter;
