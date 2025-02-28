@@ -41,7 +41,7 @@ const Register = () => {
       console.error('Error:', error);
       notification.error({
         message: 'Error',
-        description: error.response.data.error, // Use the error message from the response
+        description: error.response.data.message, // Use the error message from the response
         duration: 5
       });
       hideLoading()
@@ -72,7 +72,7 @@ const Register = () => {
       }else if(response.status === 400){
         notification.error({
           message: 'Error',
-          description: response.data.error, // Use the error message from the response
+          description: response.data.message, // Use the error message from the response
           duration: 5
         });
       }
@@ -83,7 +83,7 @@ const Register = () => {
       console.error('Error:', error);
       notification.error({
         message: 'Error',
-        description: error.response.data.error, // Use the error message from the response
+        description: error.response.data.message, // Use the error message from the response
         duration: 3
       });
       hideLoading()
@@ -92,29 +92,15 @@ const Register = () => {
 
   return (
     <div
-      className="flex items-center justify-center h-screen bg-gray-100"
+      className="flex flex-col px-2 items-center justify-center h-screen bg-gray-100"
       style={{ backgroundColor: '#f9f9f9' }} // Light background color
     >
-      {/* {
-        loading && <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light overlay background
-            zIndex: 1000,
-          }}
-        >
-          <Spin size="large" />
-        </div>
-      } */}
+      <h1 className="text-4xl font-extrabold text-gray-700 mb-6 opacity-90">
+        thetakenotes
+      </h1>
+      
       <div
-        className="p-6 bg-white rounded shadow-md w-full max-w-sm"
+        className="p-6 bg-white rounded-xl shadow-md w-full max-w-sm"
         style={{
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         }}
@@ -234,7 +220,7 @@ const Register = () => {
             {/* Redirect to Login */}
             <div className="text-center">
               <span>Already have an account? </span>
-              <a href="/login" className="text-blue-500 hover:underline">Login here</a>
+              <p onClick={()=>navigate('/login')} className="text-blue-500 hover:underline cursor-pointer">Login here</p>
             </div>
           </Form>
 

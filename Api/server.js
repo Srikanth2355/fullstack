@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const userRoutes = require('./Routes/userRoutes')
 const noteRoutes = require('./Routes/noteRoutes')
+const friendsRoutes = require('./Routes/friendRoutes')
 const app = express()
 const path = require("path");
 
@@ -47,6 +48,25 @@ app.use('/api/user', (req,res,next)=>{
 
 app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
     noteRoutes(req,res,next)
+})
+
+app.use('/api/friends',checkLoggedIn, (req,res,next)=>{
+    friendsRoutes(req,res,next)
+})
+
+app.get("/api/healthcheck/checkbackendservices", (req, res) => {
+    res.status(200).json({ message: "Backend services are healthy" });
+});
+
+app.get("/api/healthcheck/checkdatabaseservices", (req, res) => {
+    const mongoose = require("mongoose");
+    const state = mongoose.connection.readyState
+    if(state === 1){
+        res.status(200).json({ message: "Database services are healthy and connected" });
+    }
+    else{
+        res.status(500).json({ message: "Database services are not connected" });
+    }
 })
 
 // Serve the static files from the React build folder

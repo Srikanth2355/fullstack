@@ -24,7 +24,7 @@ const ForgotPassword = () => {
         setStep(2);
       })
       .catch((error) => {
-        notification.error({ message: "Error", description: error.response.data.error });
+        notification.error({ message: "Error", description: error.response.data.message });
       })
       .finally(() => hideLoading());
   };
@@ -38,14 +38,17 @@ const ForgotPassword = () => {
         navigate('/login');
       })
       .catch((error) => {
-        notification.error({ message: "Error", description: error.response.data.error });
+        notification.error({ message: "Error", description: error.response.data.message });
       })
       .finally(() => hideLoading());
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="p-6 bg-white rounded shadow-md w-full max-w-sm">
+    <div className="flex flex-col px-2 items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-4xl font-extrabold text-gray-700 mb-6 opacity-90">
+        thetakenotes
+      </h1>
+      <div className="p-6 bg-white rounded-xl shadow-md w-full max-w-sm">
         <Title level={3} className="text-center">
           {step === 1 ? "Forgot Password" : "Reset Password"}
         </Title>
@@ -91,7 +94,7 @@ const ForgotPassword = () => {
         )}
 
         <div className="text-center mt-4">
-          <a href="/login" className="text-blue-500 hover:underline">Back to Login</a>
+          <p onClick={() => navigate('/login')} className="text-blue-500 hover:underline cursor-pointer">Back to Login</p>
         </div>
       </div>
     </div>

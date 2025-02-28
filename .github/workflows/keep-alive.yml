@@ -1,0 +1,13 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: "*/3 * * * *"  # Runs every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Request to Render App
+        run: curl -s -o /dev/null -w "%{http_code}" https://thetakenotes.onrender.com/

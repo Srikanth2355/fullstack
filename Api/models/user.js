@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "user",
         enum: ["user", "admin", "superadmin","visitor"]
-    }
+    },
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    sharedNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notes" }]
 },
     {
         timestamps: true

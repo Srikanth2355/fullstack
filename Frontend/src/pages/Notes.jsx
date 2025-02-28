@@ -1,12 +1,13 @@
 import React, { Children, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Button, Card, notification,Empty, Modal, Typography, Popconfirm } from "antd";
+import { Input, Button, Card, notification,Empty, Tooltip } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {useLoading} from '../utils/loader';
 import axiosInstance from '../utils/axios';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
+import {ShareAltOutlined } from '@ant-design/icons'
 function Notes() {
     const user = useSelector((state) => state.user);
     const [isDisabled, setIsDisabled] = useState(true);
@@ -167,17 +168,19 @@ function Notes() {
             (<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 my-2'>
                 {allNotes.map((note,index)=>{
                     return(
-                        <Card key={index}  className=" p-3 shadow-md rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" onClick={()=>navigate(`/notes/${note._id}`)}>
-                            <p className='text-xl font-semibold truncate px-2'>{note.title}</p>
-                            <div className="h-[220px] overflow-hidden  px-2 cursor-pointer">
+                        <Card key={index} 
+                        actions={[
+                            <Tooltip title="Comming Soon">
+                                <ShareAltOutlined key="share" style={{fontSize:"19px"}} />
+                            </Tooltip>
+                          ]}
+                            className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
+                            <Tooltip title={note.title} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
+                                <p className='text-xl font-medium truncate px-2'>{note.title}</p>
+                            </Tooltip>    
+                            <div className="h-[210px] overflow-hidden  px-2 pb-2 cursor-pointer" onClick={()=>navigate(`/notes/${note._id}`)}>
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
                             </div>
-                            {/* <ReactQuill
-                                value={'note.content'} // Render the HTML content
-                                readOnly={true} // Prevent editing
-                                theme="snow" // Keep default styling
-                                modules={{ toolbar: false }} // Remove the toolbar
-                            /> */}
                         </Card>
                     )
                 })}
