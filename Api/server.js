@@ -54,6 +54,21 @@ app.use('/api/friends',checkLoggedIn, (req,res,next)=>{
     friendsRoutes(req,res,next)
 })
 
+app.get("/api/healthcheck/checkbackendservices", (req, res) => {
+    res.status(200).json({ message: "Backend services are healthy" });
+});
+
+app.get("/api/healthcheck/checkdatabaseservices", (req, res) => {
+    const mongoose = require("mongoose");
+    const state = mongoose.connection.readyState
+    if(state === 1){
+        res.status(200).json({ message: "Database services are healthy and connected" });
+    }
+    else{
+        res.status(500).json({ message: "Database services are not connected" });
+    }
+})
+
 // Serve the static files from the React build folder
 // app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
