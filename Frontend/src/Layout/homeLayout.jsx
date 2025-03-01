@@ -122,8 +122,6 @@ function HomeLayout() {
             onClick={(e) => {
               if (e.key === "5") {
                 window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank");
-              } else if (e.key === "6") {
-                handleLogout();
               }
             }}
             items={[
