@@ -1,6 +1,6 @@
 import React,{useState,useEffect,useCallback} from 'react'
-import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip } from "antd";
-import { UserAddOutlined, UserDeleteOutlined, ReloadOutlined ,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
+import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip,Popconfirm } from "antd";
+import { UserAddOutlined, UserDeleteOutlined, ReloadOutlined ,CheckCircleFilled,CloseCircleOutlined,QuestionCircleOutlined} from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
 import {useLoading} from '../utils/loader';
 const Friends = () => {
@@ -55,10 +55,18 @@ const Friends = () => {
         title: "Action",
         key: "action",
         render: (_, record) => (
-          <Tooltip title="Unfriend">
-            <Button type="text" icon={<UserDeleteOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} onClick={() => removeFriend(record)} />} /> 
-          </Tooltip>
-          // <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
+          <Popconfirm
+          title={<span classNme="text-red-500">Unfriend</span>}
+          icon={<QuestionCircleOutlined className="text-red-500" />}
+          placement="topLeft"
+          description={"Are you sure to Unfriend "+ record.name+" ?"}
+          onConfirm={() => removeFriend(record)}
+          onCancel={() => console.log("Cancel")}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="text" icon={<UserDeleteOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}}  />} /> 
+        </Popconfirm>
         ),
       },
     ];
