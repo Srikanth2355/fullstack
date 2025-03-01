@@ -1,6 +1,6 @@
 import React, { Children, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Button, Card, notification,Empty, Tooltip } from "antd";
+import { Input, Button, Card, notification,Empty, Tooltip,Modal } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {useLoading} from '../utils/loader';
@@ -8,6 +8,7 @@ import axiosInstance from '../utils/axios';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import {ShareAltOutlined } from '@ant-design/icons'
+import ShareNotes from "../components/sharenotes.jsx";
 function Notes() {
     const user = useSelector((state) => state.user);
     const [isDisabled, setIsDisabled] = useState(true);
@@ -17,6 +18,8 @@ function Notes() {
     const [blockaddingnote,setBlockaddingnote] = useState(false);
     const {showLoading,hideLoading} = useLoading();
     const [allNotes, setAllNotes] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [shareNoteid, setShareNoteid] = useState("");
     const navigate = useNavigate();
     
     const toolbarOptions = [
@@ -170,9 +173,7 @@ function Notes() {
                     return(
                         <Card key={index} 
                         actions={[
-                            <Tooltip title="Comming Soon">
-                                <ShareAltOutlined key="share" style={{fontSize:"19px"}} />
-                            </Tooltip>
+                            <ShareAltOutlined key="share" style={{fontSize:"19px"}} onClick={() =>{setIsModalOpen(true);setShareNoteid(note._id)} } />
                           ]}
                             className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
                             <Tooltip title={note.title} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
@@ -187,6 +188,25 @@ function Notes() {
             </div>
             )
         }
+
+        <Modal
+            title="Share Notes"
+            open={isModalOpen}
+            onCancel={() => setIsModalOpen(false)}
+            footer={null}
+            maskClosable={false}
+            centered
+            className='custom-modal rounded-xl'
+            width={{
+                xs: '90vw',
+                sm: '80vw',
+                md: '60vw',
+              }}
+        >
+            <div className='w-90vw sm:w-[80vw] md:w-[60vw] min-h-96 h-[550px] md:h-[400px]'>
+                <ShareNotes id={shareNoteid} />
+            </div>
+        </Modal>
     </>
   )
 }
