@@ -2,9 +2,14 @@ import React,{ useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Table, Tooltip,Popconfirm,notification, Typography,Select,Empty, Tag } from "antd";
 import { QuestionCircleOutlined, UserDeleteOutlined } from "@ant-design/icons";
+import {useLoading} from '../utils/loader';
+import axiosInstance from "../utils/axios";
 const shareNotes = ({id}) => {
     const { Option } = Select;
     const [selectedFriends, setSelectedFriends] = useState([]);
+    const {showLoading, hideLoading} = useLoading();
+    const [friendsList,setFriendsList] = useState([]);
+    const [availablefriendsList,setAvailablefriendsList] = useState([]);
     const friendColumns = [
         {
             title: "Name",
@@ -51,11 +56,11 @@ const shareNotes = ({id}) => {
           key: "action",
           render: (_, record) => (
             <Popconfirm
-            title={<span classNme="text-red-500">Unfriend</span>}
+            title={<span classNme="text-red-500">Revoke Access</span>}
             icon={<QuestionCircleOutlined className="text-red-500" />}
             placement="topLeft"
-            description={"Are you sure to Unfriend "+ record.name+" ?"}
-            onConfirm={() => removeFriend(record)}
+            description={"Are you sure to Revoke Access to his note from "+ record.name+" ?"}
+            onConfirm={""}
             onCancel={() => console.log("Cancel")}
             okText="Yes"
             cancelText="No"
@@ -70,48 +75,112 @@ const shareNotes = ({id}) => {
         return `hsl(${hue}, 70%, 85%)`;
     };
 
-    const availablefriendsList = [
-        { id: 1, name: "John Doe", email: "johwn@example.com" },
-        { id: 2, name: "Jane Smith", email: "janxe@example.com" },
-        { id: 3, name: "Alice Brown", email: "alirce@example.com" },
-        { id: 4, name: "John Doe", email: "john@example.com" },
-        { id: 5, name: "Jane Smith", email: "janwe@example.com" },
-        { id: 6, name: "Alicexyz dfr Brown", email: "aliwce@example.com" },
-        { id: 7, name: "Alice Brown", email: "aliece@example.com" },
-        { id: 8, name: "John Doe", email: "johxn@example.com" },
-        { id: 9, name: "Jane Smith", email: "jane@example.com" },
-        { id: 10, name: "Alice Brown", email: "alicess@example.com" },
-    
-    ];
-    const friendsList = [
-
-        { id: 1, name: "John Doe", email: "john@example.com" },
-    
-        { id: 2, name: "Jane Smith", email: "jane@example.com" },
-    
-        { id: 3, name: "Alice Brown", email: "alice@example.com" },
-        { id: 4, name: "John Doe", email: "john@example.com" },
-    
-        { id: 5, name: "Jane Smith", email: "jane@example.com" },
-    
-        { id: 6, name: "Alice Brown", email: "alice@example.com" },
-    
-    ];
-
     const handleSelectChange = (data) => {
-        const parsed_frnds = data.map((val) => JSON.parse(val));
-        setSelectedFriends(parsed_frnds);
-    
-      };
+      const parsed_frnds = data.map((val) => JSON.parse(val));
+      setSelectedFriends(parsed_frnds);
+    };
+    // frnds who have access to note
+    const getfrndsaccesstonotes = () =>{
+      showLoading();
+      axiosInstance.get(`/notes/getfrndsaccesstonotes/${id}`)
+      .then((response) => {
+        if(response.status === 200){
+          setFriendsList(response.data.friends);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        notification.error({
+            message: 'Error',
+            description: error.response.data.message,
+            duration: 5,
+        });
+      })
+      .finally(() => {
+        hideLoading();
+      })
+    }
+   //frnds available to share notes 
+    const getavailablefriends = () => {
+      showLoading();
+      axiosInstance.get("/friends/getallfriends")
+      .then((response) => {
+        if(response.status === 200){
+          let allfrnds = response.data.friends;
+          let filteredfrnds = allfrnds.filter((friend)=>{
+            return !(friendsList.some((frnd)=>{
+              return friend.email === frnd.email
+            }))
+          })
+          console.log(filteredfrnds);
+          setAvailablefriendsList(filteredfrnds);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        notification.error({
+            message: 'Error',
+            description: error.response.data.message,
+            duration: 5,
+        });
+      })
+      .finally(() => {
+        hideLoading();
+      })
+    }
+
+    const shareNotes = () => {
+      showLoading();
+      if(selectedFriends.length == 0){
+        notification.error({
+            message: 'Error',
+            description: "Please select friends",
+            duration: 5,
+        });
+        return;
+    }
+    axiosInstance.post(`/notes/sharenotes/${id}`,{
+      friends:selectedFriends
+    })
+    .then((response) => {
+      if(response.status === 200){
+        notification.success({
+            message: 'Success',
+            description: response.data.message,
+            duration: 5,
+        });
+        setSelectedFriends([]);
+        getfrndsaccesstonotes();
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      notification.error({
+          message: 'Error',
+          description: error.response.data.message,
+          duration: 5,
+      });
+    })
+    .finally(() => {
+      hideLoading();
+    })
+  }
+
+    useEffect(() => {
+      getfrndsaccesstonotes();
+    }, []);
+
+    useEffect(() => {
+        getavailablefriends();
+    }, [friendsList]);
     return (
         <div className="">
             <Typography.Text className="text-md font-semibold mr-2">Select Friends:</Typography.Text> <br />
-            <div>
-
+            <div className="flex">
                 <Select
                     mode="multiple" // Enables multi-select
-                    className="w-[150px] sm:w-[350px] mr-2 mt-2"
-                    placeholder={friendsList.length === 0 ? "Please add friends" : "Search and select friends"}
+                    className="flex-1 sm:w-[350px] mr-2 mt-2"
+                    placeholder="Search and select friends"
                     value={selectedFriends.map((friend) => JSON.stringify(friend))}
                     onChange={handleSelectChange}
                     allowClear
@@ -123,7 +192,7 @@ const shareNotes = ({id}) => {
 
                 {availablefriendsList.length > 0 ? (
                     availablefriendsList.map((friend) => (
-                    <Option key={friend.id} value={JSON.stringify(friend)} >
+                    <Option key={friend.id} value={JSON.stringify(friend)} disabled={selectedFriends.length >= 5} >
                         {friend.name} ({friend.email})
                     </Option>
 
@@ -132,14 +201,14 @@ const shareNotes = ({id}) => {
                 ) : null}
 
                 </Select>
-                <Button type="primary" shape="round">
-                                                    Share
-                                                    </Button>
+                <Button type="primary" shape="round" onClick={shareNotes}>
+                  Share
+                </Button>
             </div>
             <div className="w-full my-2 rounded-2xl h-[450px] md:h-[300px]">
                 <Table
                     columns={friendColumns}
-                    dataSource={friendsList.map((request) => ({
+                    dataSource={(friendsList || []).map((request) => ({
                         ...request,
                         key: request._id
                     }))}
@@ -148,7 +217,7 @@ const shareNotes = ({id}) => {
                         emptyText: (
                         <Empty 
                             image={Empty.PRESENTED_IMAGE_SIMPLE} 
-                            description="No Friends yet! Try adding some."
+                            description="Note has not been shared with anyone."
                         />
                         ),
                     }}

@@ -20,6 +20,7 @@ function Notes() {
     const [allNotes, setAllNotes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [shareNoteid, setShareNoteid] = useState("");
+    const [keytoforcererender, setKeytoforcererender] = useState(false);
     const navigate = useNavigate();
     
     const toolbarOptions = [
@@ -173,7 +174,7 @@ function Notes() {
                     return(
                         <Card key={index} 
                         actions={[
-                            <ShareAltOutlined key="share" style={{fontSize:"19px"}} onClick={() =>{setIsModalOpen(true);setShareNoteid(note._id)} } />
+                            <ShareAltOutlined key="share" style={{fontSize:"19px"}} onClick={() =>{setIsModalOpen(true);setShareNoteid(note._id);setKeytoforcererender((prev)=>!prev)} } />
                           ]}
                             className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
                             <Tooltip title={note.title} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
@@ -203,8 +204,8 @@ function Notes() {
                 md: '60vw',
               }}
         >
-            <div className='w-90vw sm:w-[80vw] md:w-[60vw] min-h-96 h-[550px] md:h-[400px]'>
-                <ShareNotes id={shareNoteid} />
+            <div className='w-90vw sm:w-[80vw] md:w-[50vw] min-h-96 h-[550px] md:h-[400px]' >
+                <ShareNotes id={shareNoteid} key={keytoforcererender} />
             </div>
         </Modal>
     </>

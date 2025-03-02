@@ -27,4 +27,24 @@ const updateExistingUsers = async () => {
   }
 };
 // updateExistingUsers();
-updateExistingNotes();
+// updateExistingNotes();
+
+const addnotesaccesscolumn = async () => {
+  try {
+    await connectDB(); // ✅ Ensure DB is connected
+
+    // ✅ Update users only if 'friends' or 'sharedNotes' do not exist
+    const result = await User.updateMany(
+      { $or: [{ notesaccessto: { $exists: false } }] },
+      { $set: { notesaccessto: []} }
+    );
+
+    console.log(`✅ Updated ${result.modifiedCount} users successfully!`);
+  } catch (error) {
+    console.error("❌ Error updating users:", error);
+  } finally {
+    // ✅ Close database connection
+    mongoose.connection.close();
+  }
+};
+addnotesaccesscolumn();
