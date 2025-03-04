@@ -58,4 +58,30 @@ const checkalrdyshared = async (req, res, next) => {
 
 }
 
-module.exports = {checkvalidfriends,checkalrdyshared};
+const checkshared = async (req, res, next) => {
+    try{
+        const user = req.user;
+        const noteid = req.params.id;
+        const friendid = req.params.friendid; 
+        // first check whether note id exists and created by loggedin user iteself
+        const note = await Note.findOne({ _id: noteid });
+        if(!note){
+            return res.status(400).json({ message: "Note not found" });
+        }
+        if(note.createdBy != user.id){
+            return res.status(400).json({ message: "Access denied to this note. Plesae contact the owner to get access" });
+        }
+        // now check whether this note is already shared with this user
+        const isShared = await Note.findOne({ _id: noteid,sharedWith:{$in:friendid}});
+        if(!isShared){
+            return res.status(400).json({ message: "This note is not shared with this user" });
+        }
+        next();
+    }
+    catch (error) {
+        console.error("Error checking Notes access to user:", error);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = {checkvalidfriends,checkalrdyshared,checkshared};

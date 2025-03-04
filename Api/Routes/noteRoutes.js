@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const noterouter = express.Router();
 const Note = require("../models/notes");
 const User = require("../models/user");
-const { checkvalidfriends, checkalrdyshared } = require("../Middlewares/friends");
+const { checkvalidfriends, checkalrdyshared, checkshared } = require("../Middlewares/friends");
 
 noterouter.post("/addnote", async (req, res) => {
     try {
@@ -127,6 +127,26 @@ noterouter.post("/sharenotes/:id",checkvalidfriends,checkalrdyshared,async(req,r
         // Rollback transaction if any update fails
         await session.abortTransaction();
         session.endSession();
+        res.status(500).json({ message: error.message });
+    }
+})
+
+// implement unshare note with friends
+noterouter.delete("/removeaccess/:id/:friendid",checkshared,async(req,res)=>{
+    try{
+        const noteid = req.params.id;
+        const friendid = req.params.friendid;
+        const note = await Note.findOne({ _id: noteid });
+        note.sharedWith.pull(friendid);
+        await note.save();
+        // Also updte the user document sharednotes array
+        if(note.sharedWith.length == 0){
+            const user = await User.findOne({ _id: req.user.id });
+            user.sharedNotes.pull(noteid);
+            await user.save();
+        }
+        res.status(200).json({ message: "Access removed successfully" });
+    }catch(error){
         res.status(500).json({ message: error.message });
     }
 })
