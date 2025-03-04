@@ -47,6 +47,29 @@
 .custom-scrollbar.ql-editor {
   height: 65vh !important;
 }
+
+.fade-mask {
+  position: relative;
+  max-height: 200px; /* Adjust based on font-size */
+  overflow: hidden;
+}
+
+.fade-mask2 {
+  position: relative;
+  max-height: 230px; /* Adjust based on font-size */
+  overflow: hidden;
+}
+
+.fade-mask::after, .fade-mask2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; /* Gradient height */
+  background: linear-gradient(transparent, white);
+}
+
 @media (min-width: 768px) {
   .customforsmallscreen .ql-container.ql-snow {
     height: 60vh !important;

@@ -16,11 +16,11 @@ const Friends = () => {
           dataIndex: "name",
           key: "name",
           responsive: ["xs"], // Show only on small screens
-          render: (text, record) => (
+          render: (text, record,index) => (
             <div className='flex items-center'>
                 <div 
                   className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
-                  style={{ backgroundColor: getRandomPastelColor() }}
+                  style={{ backgroundColor: getRandomPastelColor(index) }}
                 >
                   {text.charAt(0).toUpperCase()}
                 </div>
@@ -38,11 +38,11 @@ const Friends = () => {
           ),
         },
       { title: "Name", dataIndex: "name", key: "name",responsive: ["sm"],
-        render: (text, record) => (
+        render: (text, record,index) => (
           <div className="flex items-center space-x-2">
             <div 
               className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
-              style={{ backgroundColor: getRandomPastelColor() }}
+              style={{ backgroundColor: getRandomPastelColor(index) }}
             >
               {text.charAt(0).toUpperCase()}
             </div>
@@ -76,11 +76,11 @@ const Friends = () => {
             dataIndex: "sendername",
             key: "sendername",
             responsive: ["xs"], // Show only on small screens
-            render: (text, record) => (
+            render: (text, record,index) => (
               <div className='flex items-center'>
                 <div 
                   className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
-                  style={{ backgroundColor: getRandomPastelColor() }}
+                  style={{ backgroundColor: getRandomPastelColor(index) }}
                 >
                   {text.charAt(0).toUpperCase()}
                 </div>
@@ -98,11 +98,11 @@ const Friends = () => {
             ),
           },
         { title: "Name", dataIndex: "sendername", key: "sendername",responsive: ["sm"],
-          render: (text, record) => (
+          render: (text, record,index) => (
             <div className="flex items-center space-x-2">
               <div 
                 className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
-                style={{ backgroundColor: getRandomPastelColor() }}
+                style={{ backgroundColor: getRandomPastelColor(index) }}
               >
                 {text.charAt(0).toUpperCase()}
               </div>
@@ -128,9 +128,9 @@ const Friends = () => {
           ),
         },
     ];
-    const getRandomPastelColor = () => {
-      const hue = Math.floor(Math.random() * 360); // Random hue value
-      return `hsl(${hue}, 70%, 85%)`; // HSL with high lightness for pastel effect
+    const getRandomPastelColor = (index) => {
+      const pastelColors = ["#00E0F4", "#F4BEF2", "#CCBEF4"]; 
+      return pastelColors[index % pastelColors.length];
     };
 
     const sendFriendRequest = () => {

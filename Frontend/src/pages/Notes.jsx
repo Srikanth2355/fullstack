@@ -173,7 +173,7 @@ function Notes() {
                 {allNotes.map((note,index)=>{
                     return(
                         <Card key={index} 
-                        actions={[
+                            actions={[
                             <ShareAltOutlined key="share" style={{fontSize:"19px"}} onClick={() =>{setIsModalOpen(true);setShareNoteid(note._id);setKeytoforcererender((prev)=>!prev)} } />
                           ]}
                             className=" p-3  rounded-lg border border-gray-300 h-[300px] mx-2 cursor-pointer" >
@@ -181,7 +181,13 @@ function Notes() {
                                 <p className='text-xl font-medium truncate px-2'>{note.title}</p>
                             </Tooltip>    
                             <div className="h-[210px] overflow-hidden  px-2 pb-2 cursor-pointer" onClick={()=>navigate(`/notes/${note._id}`)}>
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor' style={{overflow:"hidden",paddingLeft:"0px",paddingRight:"0px"}}></div>
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.htmlcontent) }} className='ql-editor fade-mask' 
+                                    style={{
+                                        overflow: "hidden",
+                                        paddingLeft: "0px",
+                                        paddingRight: "0px"
+                                    }}
+                                ></div>
                             </div>
                         </Card>
                     )

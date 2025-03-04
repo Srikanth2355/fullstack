@@ -1,4 +1,4 @@
-import React,{ useState,useEffect} from "react";
+import React,{ useState,useEffect, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Table, Tooltip,Popconfirm,notification, Typography,Select,Empty, Tag } from "antd";
 import { QuestionCircleOutlined, UserDeleteOutlined } from "@ant-design/icons";
@@ -16,11 +16,11 @@ const shareNotes = ({id}) => {
             dataIndex: "name",
             key: "name",
             responsive: ["xs"], // Show only on small screens
-            render: (text, record) => (
+            render: (text, record,index) => (
               <div className='flex items-center'>
                   <div 
                     className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
-                    style={{ backgroundColor: getRandomPastelColor() }}
+                    style={{ backgroundColor: getRandomPastelColor(index) }}
                   >
                     {text.charAt(0).toUpperCase()}
                   </div>
@@ -38,11 +38,11 @@ const shareNotes = ({id}) => {
             ),
         },
         { title: "Name", dataIndex: "name", key: "name",responsive: ["sm"],
-          render: (text, record) => (
+          render: (text, record,index) => (
             <div className="flex items-center space-x-2">
               <div 
                 className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
-                style={{ backgroundColor: getRandomPastelColor() }}
+                style={{ backgroundColor: getRandomPastelColor(index) }}
               >
                 {text.charAt(0).toUpperCase()}
               </div>
@@ -60,7 +60,7 @@ const shareNotes = ({id}) => {
             icon={<QuestionCircleOutlined className="text-red-500" />}
             placement="topLeft"
             description={"Are you sure to Revoke Access to his note from "+ record.name+" ?"}
-            onConfirm={""}
+            onConfirm={()=>{RemoveAccessToNote(record._id)}}
             onCancel={() => console.log("Cancel")}
             okText="Yes"
             cancelText="No"
@@ -70,9 +70,9 @@ const shareNotes = ({id}) => {
           ),
         },
     ];
-    const getRandomPastelColor = () => {
-        const hue = Math.floor(Math.random() * 360); 
-        return `hsl(${hue}, 70%, 85%)`;
+    const getRandomPastelColor = (index) => {
+      const pastelColors = ["#00E0F4", "#F4BEF2", "#CCBEF4"]; 
+      return pastelColors[index % pastelColors.length];
     };
 
     const handleSelectChange = (data) => {
@@ -138,33 +138,59 @@ const shareNotes = ({id}) => {
             duration: 5,
         });
         return;
-    }
-    axiosInstance.post(`/notes/sharenotes/${id}`,{
-      friends:selectedFriends
-    })
-    .then((response) => {
-      if(response.status === 200){
-        notification.success({
-            message: 'Success',
-            description: response.data.message,
+      }
+      axiosInstance.post(`/notes/sharenotes/${id}`,{
+        friends:selectedFriends
+      })
+      .then((response) => {
+        if(response.status === 200){
+          notification.success({
+              message: 'Success',
+              description: response.data.message,
+              duration: 5,
+          });
+          setSelectedFriends([]);
+          getfrndsaccesstonotes();
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        notification.error({
+            message: 'Error',
+            description: error.response.data.message,
             duration: 5,
         });
-        setSelectedFriends([]);
-        getfrndsaccesstonotes();
-      }
+      })
+      .finally(() => {
+        hideLoading();
+      })
+    }
+
+    const RemoveAccessToNote = useCallback((frndid) => {
+      showLoading();
+      axiosInstance.delete(`/notes/removeaccess/${id}/${frndid}`)
+      .then((response) => {
+        if(response.status === 200){
+          notification.success({
+              message: 'Success',
+              description: response.data.message,
+              duration: 5,
+          });
+          getfrndsaccesstonotes();
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        notification.error({
+            message: 'Error',
+            description: error.response.data.message,
+            duration: 5,
+        });
+      })
+      .finally(() => {
+        hideLoading();
+      })
     })
-    .catch((error) => {
-      console.error('Error:', error);
-      notification.error({
-          message: 'Error',
-          description: error.response.data.message,
-          duration: 5,
-      });
-    })
-    .finally(() => {
-      hideLoading();
-    })
-  }
 
     useEffect(() => {
       getfrndsaccesstonotes();
@@ -176,7 +202,7 @@ const shareNotes = ({id}) => {
     return (
         <div className="">
             <Typography.Text className="text-md font-semibold mr-2">Select Friends:</Typography.Text> <br />
-            <div className="flex">
+            <div className="flex items-center">
                 <Select
                     mode="multiple" // Enables multi-select
                     className="flex-1 sm:w-[350px] mr-2 mt-2"
