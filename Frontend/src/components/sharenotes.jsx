@@ -4,7 +4,7 @@ import { Button, Table, Tooltip,Popconfirm,notification, Typography,Select,Empty
 import { QuestionCircleOutlined, UserDeleteOutlined } from "@ant-design/icons";
 import {useLoading} from '../utils/loader';
 import axiosInstance from "../utils/axios";
-const shareNotes = ({id}) => {
+const shareNotes = ({id,getAllSharedNotes,closeModal}) => {
     const { Option } = Select;
     const [selectedFriends, setSelectedFriends] = useState([]);
     const {showLoading, hideLoading} = useLoading();
@@ -56,8 +56,8 @@ const shareNotes = ({id}) => {
           key: "action",
           render: (_, record) => (
             <Popconfirm
-            title={<span classNme="text-red-500">Revoke Access</span>}
-            icon={<QuestionCircleOutlined className="text-red-500" />}
+            title={<span className="text-red-500">Revoke Access</span>}
+            icon={<QuestionCircleOutlined className="text-red-500 stroke-current" style={{color:"red"}} />}
             placement="topLeft"
             description={"Are you sure to Revoke Access to his note from "+ record.name+" ?"}
             onConfirm={()=>{RemoveAccessToNote(record._id)}}
@@ -86,6 +86,9 @@ const shareNotes = ({id}) => {
       .then((response) => {
         if(response.status === 200){
           setFriendsList(response.data.friends);
+          if(response.data.friends.length == 0){
+            closeModal?.()
+          }
         }
       })
       .catch((error) => {
@@ -177,6 +180,7 @@ const shareNotes = ({id}) => {
               duration: 5,
           });
           getfrndsaccesstonotes();
+          getAllSharedNotes?.()
         }
       })
       .catch((error) => {
@@ -218,7 +222,7 @@ const shareNotes = ({id}) => {
 
                 {availablefriendsList.length > 0 ? (
                     availablefriendsList.map((friend) => (
-                    <Option key={friend.id} value={JSON.stringify(friend)} disabled={selectedFriends.length >= 5} >
+                    <Option key={friend._id} value={JSON.stringify(friend)} disabled={selectedFriends.length >= 5} >
                         {friend.name} ({friend.email})
                     </Option>
 

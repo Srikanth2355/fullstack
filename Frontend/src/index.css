@@ -48,18 +48,17 @@
   height: 65vh !important;
 }
 
-.fade-mask {
+.fade-mask, .fade-mask2 {
   position: relative;
   max-height: 200px; /* Adjust based on font-size */
   overflow: hidden;
 }
 
-.fade-mask2 {
-  position: relative;
-  max-height: 230px; /* Adjust based on font-size */
-  overflow: hidden;
-}
-
+/* .fade-mask2 { */
+  /* position: relative; */
+  /* max-height: 230px; Adjust based on font-size */
+  /* overflow: hidden; */
+/* } */
 .fade-mask::after, .fade-mask2::after {
   content: "";
   position: absolute;
