@@ -171,7 +171,6 @@ const Note = () => {
             hideLoading();
         });
     }
-          
     return (
         <> 
             {

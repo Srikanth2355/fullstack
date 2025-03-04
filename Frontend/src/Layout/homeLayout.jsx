@@ -71,7 +71,7 @@ function HomeLayout() {
       setSelectedKey('4');
     }
 
-  },[])
+  },[location.pathname]);
 
   const items = [
     {
