@@ -115,6 +115,10 @@ noterouter.post("/sharenotes/:id",checkvalidfriends,checkalrdyshared,async(req,r
             { $addToSet: { notesaccessto: noteid } }, // Add noteId without duplicates
             { session }
           );
+        // Also updte the user document sharednotes array
+        const user = await User.findOne({ _id: req.user.id });
+        user.sharedNotes.push(noteid);
+        await user.save({ session });
         // Commit transaction if all updates succeed
         await session.commitTransaction();
         session.endSession();
