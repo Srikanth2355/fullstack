@@ -10,6 +10,7 @@ const { checkLoggedIn } = require('./Middlewares/checkLoggedIn')
 const userRoutes = require('./Routes/userRoutes')
 const noteRoutes = require('./Routes/noteRoutes')
 const friendsRoutes = require('./Routes/friendRoutes')
+const sharednoteRoutes = require('./Routes/sharednoteRoutes')
 const app = express()
 const path = require("path");
 
@@ -52,6 +53,10 @@ app.use('/api/notes',checkLoggedIn, (req,res,next)=>{
 
 app.use('/api/friends',checkLoggedIn, (req,res,next)=>{
     friendsRoutes(req,res,next)
+})
+
+app.use('/api/sharednotes',checkLoggedIn, (req,res,next)=>{
+    sharednoteRoutes(req,res,next)
 })
 
 app.get("/api/healthcheck/checkbackendservices", (req, res) => {

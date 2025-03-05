@@ -1,6 +1,9 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const noterouter = express.Router();
 const Note = require("../models/notes");
+const User = require("../models/user");
+const { checkvalidfriends, checkalrdyshared, checkshared } = require("../Middlewares/friends");
 
 noterouter.post("/addnote", async (req, res) => {
     try {
@@ -73,6 +76,85 @@ noterouter.get("/getnote/:id", async (req, res) => {
         res.status(200).json({ note: findnote });
     }catch(error){
         res.status(500).json({ error: error.message }); 
+    }
+})
+
+// get freiends who has access to this notes 
+noterouter.get("/getfrndsaccesstonotes/:id",async(req,res)=>{
+    try{
+        const user = req.user;
+        const noteid = req.params.id;
+        // first check whether note id exists and created by loggedin user iteself
+        const note = await Note.findOne({ _id: noteid });
+        if(!note){
+            return res.status(400).json({ message: "Note not found" });
+        }
+        if(note.createdBy != user.id){
+            return res.status(400).json({ message: "Access denied to this note. Plesae contact the owner to get access" });
+        }
+        // now get all friends who have access to this note
+        const friends = await Note.find({ _id: noteid }).populate('sharedWith',"email name").select('sharedWith');
+        res.status(200).json({ friends: friends?friends[0].sharedWith:[] });
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+})
+
+// implement share note with friends
+noterouter.post("/sharenotes/:id",checkvalidfriends,checkalrdyshared,async(req,res)=>{
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try{
+        const noteid = req.params.id;
+        const friendIds = req.friendIds; //added this to request in checkvalidfriends middleware
+        const note = await Note.findOne({ _id: noteid });
+        note.sharedWith.push(...friendIds);
+        await note.save({ session });
+        const result = await User.updateMany(
+            { _id: { $in: friendIds } }, // Match users whose IDs are in friendIds array
+            { $addToSet: { notesaccessto: noteid } }, // Add noteId without duplicates
+            { session }
+          );
+        // Also updte the user document sharednotes array
+        const user = await User.updateOne(
+            { _id: req.user.id },
+            { $addToSet: { sharedNotes: noteid } }, // Prevents duplicates
+            { session }
+        );
+        // Commit transaction if all updates succeed
+        await session.commitTransaction();
+        session.endSession();
+        res.status(200).json({ message: "Note shared successfully" });
+    }catch(error){
+        // Rollback transaction if any update fails
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).json({ message: error.message });
+    }
+})
+
+// implement unshare note with friends
+noterouter.delete("/removeaccess/:id/:friendid",checkshared,async(req,res)=>{
+    try{
+        const noteid = req.params.id;
+        const friendid = req.params.friendid;
+        const note = await Note.findOne({ _id: noteid });
+        note.sharedWith.pull(friendid);
+        await note.save();
+        // Also updte the user document sharednotes array
+        if(note.sharedWith.length == 0){
+            const user = await User.findOne({ _id: req.user.id });
+            user.sharedNotes.pull(noteid);
+            await user.save();
+        }
+
+        // Also updte the user document notesaccessto array
+        const frd_user = await User.findOne({ _id: friendid });
+        frd_user.notesaccessto.pull(noteid);
+        await frd_user.save();
+        res.status(200).json({ message: "Access removed successfully" });
+    }catch(error){
+        res.status(500).json({ message: error.message });
     }
 })
 

@@ -171,9 +171,8 @@ const Note = () => {
             hideLoading();
         });
     }
-          
     return (
-        <div> 
+        <> 
             {
                 Object.keys(shownotes).length === 0 ? 
                     (   <div className='w-full h-[95vh] flex justify-center items-center'>
@@ -181,11 +180,11 @@ const Note = () => {
                         </div>):(
                         // Display note details
                         !editnote ? (
-                            <div className=' h-full p-2 md:mx-3 md:p-3 my-4 rounded-2xl bg-white '>
+                            <div className=' p-2 md:mx-3 md:p-3 my-2 rounded-2xl bg-white '>
                                 <div className="flex justify-start items-center  pb-2">
                                     <Title level={4} className="mb-0 pt-2">{shownotes?.title}</Title>
                                 </div>
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(shownotes?.htmlcontent)}} className="!h-[70vh] md:!h-[60vh] mt-2 overflow-y-auto p-2 border rounded-md custom-scrollbar ql-editor">
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(shownotes?.htmlcontent)}} className="h-[65vh] mt-2 overflow-y-auto p-2 border rounded-md custom-scrollbar ql-editor">
                                 </div>
                                 
                                 <div className="flex justify-end space-x-3 mt-4 border-t pt-3">
@@ -220,7 +219,7 @@ const Note = () => {
                                 </div>
                             </div>
                         ):(
-                            <div className=' h-full p-2 md:mx-3 md:p-3 my-4 rounded-2xl bg-white'>
+                            <div className=' p-2 md:mx-3 md:p-3 my-2 rounded-2xl bg-white'>
                                 <div className="flex justify-between items-center  pb-2">
                                     <Title level={4} className="mb-0">Edit Note</Title>
                                 </div>
@@ -237,7 +236,7 @@ const Note = () => {
                                     value={editdescription}
                                     onChange={handleDescriptionChange}
                                     placeholder="Write your note here..."
-                                    className="!h-[70vh] md:!h-[60vh] custom-scrollbar customforsmallscreen scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-200"
+                                    className="!h-[65vh] md:!h-[65vh] custom-scrollbar customforsmallscreen"
                                     modules={{toolbar: toolbarOptions}}
                                     preserveWhitespace={true}
                                 />
@@ -258,7 +257,7 @@ const Note = () => {
                 
             }
               
-        </div>
+        </>
     )
 }
 

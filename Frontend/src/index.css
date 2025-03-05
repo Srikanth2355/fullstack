@@ -33,21 +33,8 @@
   font-size: 15px !important;
 }
 
-.ql-disabled .ql-editor {
-  /* Add your styles here */
-  border: none !important;
-  height: 250px !important;
-  overflow-y: hidden !important;
-}
-
-.ql-container.ql-snow.ql-disabled{
-  border: none !important;
-  overflow-y: hidden !important;
-}
-
 .customforsmallscreen .ql-container.ql-snow  {
-  height: 60vh !important;
-  overflow-y: scroll !important;
+  height: 55vh !important;
 }
 
 .custom-table .ant-table-body {
@@ -56,13 +43,41 @@
   scrollbar-width: 3px !important;
   scrollbar-color: #a1a1aa #f3f4f6;
 }
+
+.custom-scrollbar.ql-editor {
+  height: 65vh !important;
+}
+
+.fade-mask, .fade-mask2 {
+  position: relative;
+  max-height: 200px; /* Adjust based on font-size */
+  overflow: hidden;
+}
+
+.fade-mask3 {
+  position: relative;
+  max-height: 230px; 
+  overflow: hidden;
+}
+.fade-mask::after, .fade-mask2::after, .fade-mask3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; /* Gradient height */
+  background: linear-gradient(transparent, white);
+}
+
 @media (min-width: 768px) {
   .customforsmallscreen .ql-container.ql-snow {
-    height: 55vh !important;
+    height: 60vh !important;
   }
-  .customforsmallscreen .ql-container.ql-snow .ql-editor {
+  /* .customforsmallscreen .ql-container.ql-snow .ql-editor {
     height: unset !important;
-  }
+  } */
+
+  
 
   .custom-scrollbar .ql-container.ql-snow .ql-editor::-webkit-scrollbar {
     width: 8px; /* Narrower scrollbar */

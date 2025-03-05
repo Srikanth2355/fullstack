@@ -1,13 +1,16 @@
 import React, { Children, useEffect, useState } from 'react';
-import { Layout, Menu, notification, theme, Drawer } from 'antd';
+import { Layout, Menu, notification, theme, Drawer, Tooltip } from 'antd';
 import { DeleteOutlined,MenuUnfoldOutlined, LogoutOutlined, BookOutlined, ShareAltOutlined, InboxOutlined, UserAddOutlined, PullRequestOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet,useLocation } from 'react-router-dom';
 import { useLoading } from '../utils/loader.jsx';
 import axiosInstance from '../utils/axios';
+import { useSelector } from 'react-redux';
+
 
 const { Sider } = Layout;
 
 function HomeLayout() {
+  const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const location = useLocation();
   const {showLoading, hideLoading} = useLoading();
@@ -71,7 +74,7 @@ function HomeLayout() {
       setSelectedKey('4');
     }
 
-  },[])
+  },[location.pathname]);
 
   const items = [
     {
@@ -122,8 +125,6 @@ function HomeLayout() {
             onClick={(e) => {
               if (e.key === "5") {
                 window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank");
-              } else if (e.key === "6") {
-                handleLogout();
               }
             }}
             items={[
@@ -162,7 +163,7 @@ function HomeLayout() {
         }}
       >
         <div>
-          <div className="demo-logo-vertical mt-2 mb-5 font-semibold text-2xl text-white/65 flex justify-center items-center">takenotes</div> 
+          <div className="demo-logo-vertical mt-2 mb-5 font-semibold text-2xl text-white/65 flex justify-center  items-center">thetakenotes</div> 
           <Menu className='text-sm md:text-md ' theme="dark" mode="inline" selectedKeys={[selectedKey]} items={items} onClick={handleMenuClick} />
         </div>
         <div className="mb-4 absolute bottom-0 w-full">
@@ -174,8 +175,6 @@ function HomeLayout() {
             onClick={(e) => {
               if (e.key === "5") {
                 window.open("https://stats.uptimerobot.com/zrGqbCZf5T", "_blank");
-              } else if (e.key === "6") {
-                handleLogout();
               }
             }}
             items={[
@@ -196,9 +195,17 @@ function HomeLayout() {
       </Sider>
       <Layout className='min-h-screen md:ml-[200px]'>
 
-          <div className='md:hidden w-full p-2 px-4 flex' style={{background: '#001529',position: 'fixed', zIndex: 1000}}>
+          <div className='md:hidden w-full p-2 px-4 flex items-center' style={{background: '#001529',position: 'fixed', zIndex: 1000}}>
             <MenuUnfoldOutlined style={{ fontSize: '20px', color: 'white' }}  onClick={(value) => setOpendrawer(!opendrawer)}/>
             <p className="mx-3 w-full font-semibold text-2xl text-white/65 text-center">thetakenotes</p> 
+            <div 
+              className="w-10 h-8 flex items-center justify-center text-right text-white font-bold rounded-full mr-2"
+              style={{ backgroundColor: '#F4BEF2' }}
+            >
+              <Tooltip title={user?.email} trigger={window.innerWidth < 640 ? 'click' : 'hover'}>
+              {user?.name?.charAt(0).toUpperCase()}
+              </Tooltip>
+            </div>
 
           </div>
           <div className='mt-12 md:mt-0 h-[90vh] md:h-[100vh] custom-scrollbar' style={{

@@ -1,6 +1,6 @@
 import React,{useState,useEffect,useCallback} from 'react'
-import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip } from "antd";
-import { UserAddOutlined, UserDeleteOutlined, ReloadOutlined ,CheckCircleFilled,CloseCircleOutlined} from '@ant-design/icons';
+import { Table, Button, Input, Space, notification,Empty, Tabs,Tooltip,Popconfirm } from "antd";
+import { UserAddOutlined, UserDeleteOutlined, ReloadOutlined ,CheckCircleFilled,CloseCircleOutlined,QuestionCircleOutlined} from '@ant-design/icons';
 import axiosInstance from '../utils/axios';
 import {useLoading} from '../utils/loader';
 const Friends = () => {
@@ -16,11 +16,11 @@ const Friends = () => {
           dataIndex: "name",
           key: "name",
           responsive: ["xs"], // Show only on small screens
-          render: (text, record) => (
+          render: (text, record,index) => (
             <div className='flex items-center'>
                 <div 
                   className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
-                  style={{ backgroundColor: getRandomPastelColor() }}
+                  style={{ backgroundColor: getRandomPastelColor(index) }}
                 >
                   {text.charAt(0).toUpperCase()}
                 </div>
@@ -38,11 +38,11 @@ const Friends = () => {
           ),
         },
       { title: "Name", dataIndex: "name", key: "name",responsive: ["sm"],
-        render: (text, record) => (
+        render: (text, record,index) => (
           <div className="flex items-center space-x-2">
             <div 
               className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
-              style={{ backgroundColor: getRandomPastelColor() }}
+              style={{ backgroundColor: getRandomPastelColor(index) }}
             >
               {text.charAt(0).toUpperCase()}
             </div>
@@ -55,10 +55,18 @@ const Friends = () => {
         title: "Action",
         key: "action",
         render: (_, record) => (
-          <Tooltip title="Unfriend">
-            <Button type="text" icon={<UserDeleteOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}} onClick={() => removeFriend(record)} />} /> 
-          </Tooltip>
-          // <Button type='text' danger icon={<UserDeleteOutlined style={{fontSize:"20px"}} />} onClick={() => removeFriend(record.key)} />
+          <Popconfirm
+          title={<span classNme="text-red-500">Unfriend</span>}
+          icon={<QuestionCircleOutlined className="text-red-500" />}
+          placement="topLeft"
+          description={"Are you sure to Unfriend "+ record.name+" ?"}
+          onConfirm={() => removeFriend(record)}
+          onCancel={() => console.log("Cancel")}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="text" icon={<UserDeleteOutlined className="text-red-500 text-xl" style={{fontSize:"20px"}}  />} /> 
+        </Popconfirm>
         ),
       },
     ];
@@ -68,11 +76,11 @@ const Friends = () => {
             dataIndex: "sendername",
             key: "sendername",
             responsive: ["xs"], // Show only on small screens
-            render: (text, record) => (
+            render: (text, record,index) => (
               <div className='flex items-center'>
                 <div 
                   className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full mr-2"
-                  style={{ backgroundColor: getRandomPastelColor() }}
+                  style={{ backgroundColor: getRandomPastelColor(index) }}
                 >
                   {text.charAt(0).toUpperCase()}
                 </div>
@@ -90,11 +98,11 @@ const Friends = () => {
             ),
           },
         { title: "Name", dataIndex: "sendername", key: "sendername",responsive: ["sm"],
-          render: (text, record) => (
+          render: (text, record,index) => (
             <div className="flex items-center space-x-2">
               <div 
                 className="w-10 h-10 flex items-center justify-center text-white font-bold rounded-full"
-                style={{ backgroundColor: getRandomPastelColor() }}
+                style={{ backgroundColor: getRandomPastelColor(index) }}
               >
                 {text.charAt(0).toUpperCase()}
               </div>
@@ -120,9 +128,9 @@ const Friends = () => {
           ),
         },
     ];
-    const getRandomPastelColor = () => {
-      const hue = Math.floor(Math.random() * 360); // Random hue value
-      return `hsl(${hue}, 70%, 85%)`; // HSL with high lightness for pastel effect
+    const getRandomPastelColor = (index) => {
+      const pastelColors = ["#00E0F4", "#F4BEF2", "#CCBEF4"]; 
+      return pastelColors[index % pastelColors.length];
     };
 
     const sendFriendRequest = () => {

@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
         enum: ["user", "admin", "superadmin","visitor"]
     },
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    sharedNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notes" }]
+    sharedNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notes" }],
+    notesaccessto: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notes" }],
 },
     {
         timestamps: true
