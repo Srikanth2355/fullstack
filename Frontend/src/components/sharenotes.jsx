@@ -59,7 +59,7 @@ const shareNotes = ({id,getAllSharedNotes,closeModal}) => {
             title={<span className="text-red-500">Revoke Access</span>}
             icon={<QuestionCircleOutlined className="text-red-500 stroke-current" style={{color:"red"}} />}
             placement="topLeft"
-            description={"Are you sure to Revoke Access to his note from "+ record.name+" ?"}
+            description={"Revoke Access from "+ record.name+" ?"}
             onConfirm={()=>{RemoveAccessToNote(record._id)}}
             onCancel={() => console.log("Cancel")}
             okText="Yes"
@@ -150,7 +150,7 @@ const shareNotes = ({id,getAllSharedNotes,closeModal}) => {
           notification.success({
               message: 'Success',
               description: response.data.message,
-              duration: 5,
+              duration: 3,
           });
           setSelectedFriends([]);
           getfrndsaccesstonotes();
@@ -177,7 +177,7 @@ const shareNotes = ({id,getAllSharedNotes,closeModal}) => {
           notification.success({
               message: 'Success',
               description: response.data.message,
-              duration: 5,
+              duration: 3,
           });
           getfrndsaccesstonotes();
           getAllSharedNotes?.()
@@ -209,7 +209,7 @@ const shareNotes = ({id,getAllSharedNotes,closeModal}) => {
             <div className="flex items-center">
                 <Select
                     mode="multiple" // Enables multi-select
-                    className="flex-1 sm:w-[350px] mr-2 mt-2"
+                    className="w-[250px] sm:w-[350px] mr-2 mt-2"
                     placeholder="Search and select friends"
                     value={selectedFriends.map((friend) => JSON.stringify(friend))}
                     onChange={handleSelectChange}
