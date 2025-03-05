@@ -116,9 +116,11 @@ noterouter.post("/sharenotes/:id",checkvalidfriends,checkalrdyshared,async(req,r
             { session }
           );
         // Also updte the user document sharednotes array
-        const user = await User.findOne({ _id: req.user.id });
-        user.sharedNotes.push(noteid);
-        await user.save({ session });
+        const user = await User.updateOne(
+            { _id: req.user.id },
+            { $addToSet: { sharedNotes: noteid } }, // Prevents duplicates
+            { session }
+        );
         // Commit transaction if all updates succeed
         await session.commitTransaction();
         session.endSession();
@@ -145,6 +147,11 @@ noterouter.delete("/removeaccess/:id/:friendid",checkshared,async(req,res)=>{
             user.sharedNotes.pull(noteid);
             await user.save();
         }
+
+        // Also updte the user document notesaccessto array
+        const frd_user = await User.findOne({ _id: friendid });
+        frd_user.notesaccessto.pull(noteid);
+        await frd_user.save();
         res.status(200).json({ message: "Access removed successfully" });
     }catch(error){
         res.status(500).json({ message: error.message });

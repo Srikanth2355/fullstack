@@ -54,12 +54,12 @@
   overflow: hidden;
 }
 
-/* .fade-mask2 { */
-  /* position: relative; */
-  /* max-height: 230px; Adjust based on font-size */
-  /* overflow: hidden; */
-/* } */
-.fade-mask::after, .fade-mask2::after {
+.fade-mask3 {
+  position: relative;
+  max-height: 230px; 
+  overflow: hidden;
+}
+.fade-mask::after, .fade-mask2::after, .fade-mask3::after {
   content: "";
   position: absolute;
   bottom: 0;
