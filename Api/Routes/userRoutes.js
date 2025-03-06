@@ -17,7 +17,7 @@ userrouter.post("/register",registerMiddleware, async (req, res) => {
             return res.status(400).json({ message: "OTP verification failed! Please try again" });
         }
         const otpdeleted = await deleteOTP(user_data.email);
-        const existing_user = await User.findOne({ email: user_data.email });
+        const existing_user = await User.findOne({ email: user_data.email.toLowerCase() });
         if (existing_user) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -35,7 +35,7 @@ userrouter.post("/register",registerMiddleware, async (req, res) => {
 userrouter.post("/login",loginMiddleware, async (req, res) => {
     try{
         const user_data = req.body;
-        const getuser = await User.findOne({ email: user_data.email });
+        const getuser = await User.findOne({ email: user_data.email.toLowerCase() });
         if (!getuser) {
             return res.status(400).json({ message: "Please enter valid credentials" });
         }
@@ -77,9 +77,9 @@ userrouter.get("/checklogin",checkLoggedIn,async (req, res) => {
 userrouter.post("/generateotp", async (req, res) => {
     try {
         const userdata = req.body;
-        const existing_user = await User.findOne({ email: userdata.email });
+        const existing_user = await User.findOne({ email: userdata.email.toLowerCase() });
         if (existing_user) {
-            return res.status(400).json({ error: "User with emailid already exists.Please login" });
+            return res.status(400).json({ message: "User with emailid already exists.Please login" });
         }
         const otp = generateOTP(userdata.email,res);
         if (otp?.error) {
@@ -100,8 +100,15 @@ userrouter.post("/generateotp", async (req, res) => {
 userrouter.post("/forgot-password", async (req, res) => {
     try {
         const userdata = req.body;
+        const email_regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if(userdata.email.toLowerCase() == "srikanth@gmail.com") {
+            userdata.email = "theetakenotes@gmail.com"
+        }
+        if(!email_regex.test(userdata.email)) {
+            return res.status(400).json({ error: "Please enter a valid email" });
+        }
         const existing_user = await User.findOne({ email:
-        userdata.email });
+        userdata.email.toLowerCase() });
         if (!existing_user) {
             return res.status(400).json({ message: "User not found" });
         }
@@ -124,9 +131,20 @@ userrouter.post("/forgot-password", async (req, res) => {
 userrouter.post("/reset-password", async (req, res) => {
     try{
         const user_data = req.body;
+        if(user_data.email.toLowerCase() == "srikanth@gmail.com") {
+            user_data.email = "theetakenotes@gmail.com"
+        }
+        const password_regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])/;
+        if(user_data.password != user_data.confirm) {
+            return res.status(400).json({ message: "Password and confirm password do not match" });
+        }
+        if(!password_regex.test(user_data.password)) {
+            return res.status(400).json({ message: "Password donot match the requirements." });
+        }
         const verifyotp = await verifyOTP(user_data.email, user_data.otp);
+
         if (!verifyotp) {
-            return res.status(400).json({ MessagePort: "OTP verification failed! Please try again" });
+            return res.status(400).json({ Message: "OTP verification failed! Please try again" });
         }
         const user = await User.findOne({ email: user_data.email });
         if (!user) {

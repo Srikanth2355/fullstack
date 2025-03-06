@@ -15,6 +15,7 @@ const ForgotPassword =lazy(()=>import('./pages/ForgotPassword.jsx'));
 const Note = lazy(()=>import('./pages/Note.jsx'));
 const Friends = lazy(()=>import('./pages/Friends.jsx'));
 const AccessNote = lazy(()=>import('./pages/AccessNote.jsx'));
+const Profile = lazy(()=>import('./pages/Profile.jsx'));
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
                 <Route path="/sharedwithme" element={<SharedNotesWithMe />} />
                 <Route path="/accessnotes/:id" element={<AccessNote />} />
                 <Route path="/friends" element={<Friends />} />
+                <Route path="/profile" element={<Profile />} />
+
               </Route>
             </Route>
             <Route path="/login" element={<Login />} />
