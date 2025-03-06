@@ -29,7 +29,7 @@ const ProtectedRoute = () => {
                 notification.error({
                     message: "Error",
                     description: error.response?.data?.error || "Authentication failed",
-                    duration: 5
+                    duration: 1
                 });
                 setIsAuthenticated(false);
             } finally {

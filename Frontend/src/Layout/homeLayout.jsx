@@ -1,6 +1,6 @@
 import React, { Children, useEffect, useState } from 'react';
 import { Layout, Menu, notification, theme, Drawer, Tooltip } from 'antd';
-import { DeleteOutlined,MenuUnfoldOutlined, LogoutOutlined, BookOutlined, ShareAltOutlined, InboxOutlined, UserAddOutlined, PullRequestOutlined } from '@ant-design/icons';
+import { DeleteOutlined,MenuUnfoldOutlined, LogoutOutlined, BookOutlined,UserOutlined, ShareAltOutlined, InboxOutlined, UserAddOutlined, PullRequestOutlined } from '@ant-design/icons';
 import { useNavigate, Outlet,useLocation } from 'react-router-dom';
 import { useLoading } from '../utils/loader.jsx';
 import axiosInstance from '../utils/axios';
@@ -59,6 +59,8 @@ function HomeLayout() {
       navigate('/sharedwithme');
     }else if(e.key === '4'){
       navigate('/friends');
+    }else if(e.key === '4a'){
+      navigate('/profile');
     }
     setOpendrawer(false);
   };
@@ -72,6 +74,8 @@ function HomeLayout() {
       setSelectedKey('3');
     }else if(location.pathname === '/friends'){
       setSelectedKey('4');
+    }else if(location.pathname === '/profile'){
+      setSelectedKey('4a');
     }
 
   },[location.pathname]);
@@ -96,6 +100,11 @@ function HomeLayout() {
       key: '4',
       label: "Friends",
       icon: <UserAddOutlined   className='text-sm md:text-md lg:text-xl' />
+    },
+    {
+      key: '4a',
+      label: "Profile",
+      icon: <UserOutlined   className='text-sm md:text-md lg:text-xl' />
     }
   ]
   return (
