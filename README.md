@@ -1,5 +1,7 @@
 # 📝 TheTakeNotes
 
+**thetakenotes.onrender.com**
+
 **TheTakeNotes** is a full-stack **note-taking application** built with the **MERN stack** (MongoDB, Express.js, React, Node.js). It allows users to **create, edit, share, and manage notes** with authentication, friend requests, and OTP-based password reset.
 
 ## 🚀 Features
