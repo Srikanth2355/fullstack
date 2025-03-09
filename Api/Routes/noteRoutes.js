@@ -48,16 +48,41 @@ noterouter.post("/updatenote", async (req, res) => {
 });
 
 noterouter.post("/deletenote", async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try{
         const note_data = req.body;
         const userid = req.user.id;
         const findnote = await Note.findOne({ _id: note_data.id, createdBy: userid });
         if (!findnote) {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(400).json({ error: "Note not found" });
         }
-        await Note.deleteOne({ _id: note_data.id });
+
+        const sharedWithUsers = findnote.sharedWith;
+        if(sharedWithUsers.length > 0){
+           await User.updateMany(
+                { _id: { $in: sharedWithUsers } }, // Match users whose IDs are in friendIds array
+                { $pull: { notesaccessto: note_data.id } }, // Remove noteId from notesaccessto array
+                { session }
+            );
+        }
+
+        // also remove from created user sharednotes array with session
+        const user = await User.findOne({ _id: userid });
+        user.sharedNotes.pull(note_data.id);
+        await user.save({ session });
+
+        // Delete the note
+        await Note.findByIdAndDelete(note_data.id, { session });
+        await session.commitTransaction();
+        session.endSession();
         res.status(200).json({ message: "Note deleted successfully" });
     }catch(error){
+         // Rollback transaction if any step fails
+         await session.abortTransaction();
+         session.endSession();
         res.status(500).json({ error: error.message }); 
     }
 });
