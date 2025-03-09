@@ -56,8 +56,8 @@ const Friends = () => {
         key: "action",
         render: (_, record) => (
           <Popconfirm
-          title={<span classNme="text-red-500">Unfriend</span>}
-          icon={<QuestionCircleOutlined className="text-red-500" />}
+          title={<span className="text-red-500">Unfriend</span>}
+          icon={<QuestionCircleOutlined className="text-red-500" style={{ color: "red" }} />}
           placement="topLeft"
           description={"Are you sure to Unfriend "+ record.name+" ?"}
           onConfirm={() => removeFriend(record)}
