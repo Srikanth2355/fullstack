@@ -202,7 +202,7 @@ const Note = () => {
                                     {/* Delete with Confirmation Popup */}
                                     <Popconfirm
                                     title="Are you sure you want to delete this note?"
-                                    description="Note Once deleted cannot be recovered."
+                                    description="Note shared with Friends will also be deleted."
                                     onCancel={()=>{}}
                                     onConfirm={deleteNote}
                                     okText="Yes"

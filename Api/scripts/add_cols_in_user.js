@@ -47,4 +47,27 @@ const addnotesaccesscolumn = async () => {
     mongoose.connection.close();
   }
 };
-addnotesaccesscolumn();
+
+const deletenoteid = async () => {
+  try {
+    await connectDB();
+    await User.findOneAndUpdate(
+      { email: 'srikanth@gmail.com' }, 
+      { $pull: { sharedNotes: '67c5823caeffb4142293dca2' } },
+      { new: true } // Return the updated document
+    );
+    await User.findOneAndUpdate(
+      { email: 'giri.uofm@gmail.com' }, 
+      { $pull: { notesaccessto: '67c5823caeffb4142293dca2' } },
+      { new: true } // Return the updated document
+    );
+  } catch (error) {
+    console.error("❌ Error updating user:", error);
+  } finally {
+    // ✅ Close database connection
+    mongoose.connection.close();
+  }
+
+}
+// addnotesaccesscolumn();
+// deletenoteid();
