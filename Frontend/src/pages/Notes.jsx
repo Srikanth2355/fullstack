@@ -49,7 +49,7 @@ function Notes() {
         if(blockaddingnote){
             notification.error({
                 message: 'Error',
-                description: 'Maxium of 3000 characters are allowed.',
+                description: 'Maximum of 3000 characters are allowed.',
                 duration: 2,                
             });
             return;
