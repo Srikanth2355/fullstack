@@ -75,7 +75,7 @@ const Note = () => {
     }
 
     const handleDescriptionChange = (value,delta,source,editor) => {
-        const max_chars = 3000;
+        const max_chars = 5000;
         const currentcharacters = editor.getLength();
         const text = editor.getText();
         setEditdescription((prev)=>value);
@@ -92,7 +92,7 @@ const Note = () => {
         if(blockaddingnote){
             notification.error({
                 message: 'Error',
-                description: 'Maxium of 3000 characters are allowed.',
+                description: 'Maximum of 5000 characters are allowed.',
                 duration: 5,                
             });
             hideLoading();
