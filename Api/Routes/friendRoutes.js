@@ -7,8 +7,12 @@ const User = require("../models/user");
 friendrouter.post("/addfriend", async (req, res) => {
     const sender = req.user;
     const receiver = req.body;
+    // first check user is not trying to send friend request to himself
+    if (sender.email.toLowerCase() === receiver.email.toLowerCase()) {
+        return res.status(400).json({ message: "You cannot send friend request to yourself" });
+    }
     //1.check whether friend exists in our APP 
-    const frnd_email_exists = await User.findOne({ email: receiver.email });
+    const frnd_email_exists = await User.findOne({ email: receiver.email.toLowerCase() });
     if (!frnd_email_exists) {
         return res.status(400).json({ message:  receiver.email + " is not registered. Please register first" });
     }
